@@ -49,6 +49,8 @@ exports.getPosts = async (req, res) => {
   try {
     const posts = await Post.find({})
       .populate("userId", "username avatar")
+      .populate("likes", "username avatar")
+      .populate("reposts", "username avatar")
       .sort({ _id: -1 })
       .limit(100);
 
@@ -124,6 +126,57 @@ exports.toggleLike = async (req, res) => {
       message: error.message,
     });
 
+  }
+};
+
+// Toggle Comment Like
+exports.toggleCommentLike = async (req, res) => {
+  try {
+    const { userId } = req.body;
+
+    const post = await Post.findById(
+      req.params.postId
+    );
+
+    if (!post) {
+      return res.status(404).json({
+        message: "Post not found",
+      });
+    }
+
+    const comment =
+      post.comments[req.params.commentIndex];
+
+    if (!comment) {
+      return res.status(404).json({
+        message: "Comment not found",
+      });
+    }
+
+    if (!comment.likes) {
+      comment.likes = [];
+    }
+
+    const alreadyLiked =
+      comment.likes.includes(userId);
+
+    if (alreadyLiked) {
+      comment.likes =
+        comment.likes.filter(
+          (id) => id !== userId
+        );
+    } else {
+      comment.likes.push(userId);
+    }
+
+    await post.save();
+
+    res.status(200).json(post);
+
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
   }
 };
 

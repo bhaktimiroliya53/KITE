@@ -10,6 +10,8 @@ import SavedPosts from "./pages/SavedPosts";
 import Search from "./pages/Search";
 import UserProfile from "./pages/UserProfile";
 import PostView from "./pages/PostView";
+import Messages from "./pages/Messages";
+import Chat from "./pages/Chat";
 
 function App() {
   return (
@@ -34,6 +36,11 @@ function App() {
         <Route path="/user/:id" element={<UserProfile />} />
 
         <Route path="/post/:id" element={<PostView />} />
+
+        <Route path="/messages" element={<Messages />} />
+
+        <Route path="/chat/:userId" element={<Chat />} />
+        
       </Routes>
     </BrowserRouter>
   );

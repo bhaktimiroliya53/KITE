@@ -7,6 +7,7 @@ const {
   deletePost,
   toggleLike,
   addComment,
+  toggleCommentLike,
   deleteComment,
   toggleRepost,
   toggleSave,
@@ -17,7 +18,8 @@ router.get("/", getPosts);
 router.delete("/:id", deletePost);
 router.put("/like/:id", toggleLike);
 router.put("/comment/:id", addComment);
-router.delete("/comment/:postId/:commentIndex",deleteComment);
+router.put("/comment-like/:postId/:commentIndex",toggleCommentLike);
+router.delete("/comment/:postId/:commentIndex", deleteComment);
 router.put("/repost/:id", toggleRepost);
 router.put("/save/:id", toggleSave);
 

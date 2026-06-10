@@ -1,9 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import logo from "../assets/kite-logo.png";
 import { useNavigate } from "react-router-dom";
 import API from "../services/api";
 import { FiBookmark } from "react-icons/fi";
 import { BsBookmarkFill } from "react-icons/bs";
+import { FaHeart, FaRegHeart, FaRegComment } from "react-icons/fa";
+import EmojiPicker from "emoji-picker-react";
+
+import { FiRepeat } from "react-icons/fi";
 
 function Home() {
   const user = JSON.parse(localStorage.getItem("user"));
@@ -18,6 +22,14 @@ function Home() {
   const [commentText, setCommentText] = useState("");
   const [selectedPost, setSelectedPost] = useState(null);
   const [menuOpen, setMenuOpen] = useState(null);
+  const [showLikes, setShowLikes] = useState(null);
+  const [animatingPost, setAnimatingPost] = useState(null);
+  const [showReposts, setShowReposts] = useState(null);
+  const [likedAnimation, setLikedAnimation] = useState(null);
+  const [showEmoji, setShowEmoji] = useState(false);
+  const [showCommentEmoji, setShowCommentEmoji] = useState(false);
+
+  const emojiRef = useRef(null);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -35,6 +47,21 @@ function Home() {
   };
   useEffect(() => {
     fetchPosts();
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (emojiRef.current && !emojiRef.current.contains(event.target)) {
+        setShowEmoji(false);
+        setShowCommentEmoji(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
   const handlePost = async () => {
@@ -185,6 +212,16 @@ function Home() {
     }
   };
 
+  const handleDoubleLike = (postId) => {
+    setLikedAnimation(postId);
+
+    handleLike(postId);
+
+    setTimeout(() => {
+      setLikedAnimation(null);
+    }, 800);
+  };
+
   return (
     <div className="home-page">
       {/* SIDEBAR */}
@@ -199,8 +236,7 @@ function Home() {
 
           <button>🔔 Notifications</button>
 
-          <button>💬 Messages</button>
-
+          <button onClick={() => navigate("/messages")}>💬 Messages</button>
           <button onClick={() => navigate("/profile")}>👤 Profile</button>
           <button>⚙️ Settings</button>
 
@@ -258,6 +294,11 @@ function Home() {
             const user = JSON.parse(localStorage.getItem("user"));
 
             const isSaved = post.savedBy?.includes(user._id);
+            const isReposted = post.reposts?.some(
+              (repostUser) =>
+                repostUser._id === user._id || repostUser === user._id,
+            );
+            const isAnimating = animatingPost === post._id;
 
             return (
               <div className="post-card" key={post._id}>
@@ -278,32 +319,129 @@ function Home() {
                 <p>{post.content}</p>
 
                 {post.image && (
-                  <img src={post.image} alt="" className="post-image" />
+                  <div className="image-wrapper">
+                    <img
+                      src={post.image}
+                      alt=""
+                      className="post-image"
+                      onDoubleClick={(e) => {
+                        e.stopPropagation();
+                        handleDoubleLike(post._id);
+                      }}
+                    />
+
+                    {likedAnimation === post._id && (
+                      <div className="heart-animation">❤️</div>
+                    )}
+                  </div>
                 )}
 
                 <div className="post-actions">
-                  <button onClick={() => handleLike(post._id)}>
-                    ❤️ {post.likes?.length || 0}
-                  </button>
+                  <div className="action-item">
+                    <button
+                      className="action-btn"
+                      style={{
+                        color: post.likes?.some(
+                          (likeUser) =>
+                            likeUser._id === user._id || likeUser === user._id,
+                        )
+                          ? "#ff3040"
+                          : "white",
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleLike(post._id);
+                      }}
+                    >
+                      {post.likes?.some(
+                        (likeUser) =>
+                          likeUser._id === user._id || likeUser === user._id,
+                      ) ? (
+                        <FaHeart />
+                      ) : (
+                        <FaRegHeart />
+                      )}
+                    </button>
 
-                  <button onClick={() => setSelectedPost(post)}>
-                    💬 {post.comments?.length || 0}
-                  </button>
+                    <span
+                      className="action-count"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowLikes(post);
+                      }}
+                    >
+                      {post.likes?.length || 0}
+                    </span>
+                  </div>
 
-                  <button onClick={() => handleRepost(post._id)}>
-                    🔁 {post.reposts?.length || 0}
-                  </button>
+                  <div className="action-item">
+                    <button
+                      className="action-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedPost(post);
+                      }}
+                    >
+                      <FaRegComment />
+                    </button>
 
-                  <button onClick={() => handleSave(post._id)}>
-                    {isSaved ? <BsBookmarkFill /> : <FiBookmark />}
-                  </button>
+                    <span className="action-count">
+                      {post.comments?.length || 0}
+                    </span>
+                  </div>
+
+                  <div className="action-item">
+                    <button
+                      className={`action-btn ${
+                        isAnimating ? "repost-active" : ""
+                      }`}
+                      style={{
+                        color: isReposted ? "#22c55e" : "white",
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+
+                        setAnimatingPost(post._id);
+
+                        handleRepost(post._id);
+
+                        setTimeout(() => {
+                          setAnimatingPost(null);
+                        }, 350);
+                      }}
+                    >
+                      <FiRepeat />
+                    </button>
+
+                    <span
+                      className="action-count"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowReposts(post);
+                      }}
+                    >
+                      {post.reposts?.length || 0}
+                    </span>
+                  </div>
+                  <div className="action-item">
+                    <button
+                      className="action-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSave(post._id);
+                      }}
+                    >
+                      {isSaved ? <BsBookmarkFill /> : <FiBookmark />}
+                    </button>
+                  </div>
 
                   <div className="menu-wrapper">
                     <button
                       className="menu-btn"
-                      onClick={() =>
-                        setMenuOpen(menuOpen === post._id ? null : post._id)
-                      }
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setMenuOpen(menuOpen === post._id ? null : post._id);
+                      }}
                     >
                       ⋯
                     </button>
@@ -389,12 +527,30 @@ function Home() {
               <div className="modal-icons">
                 <label htmlFor="postImage">🖼️</label>
 
-                <span>😊</span>
+                <span
+                  style={{ cursor: "pointer" }}
+                  onClick={() => setShowEmoji(!showEmoji)}
+                >
+                  😊
+                </span>
 
                 <span>📍</span>
 
                 <span>#</span>
               </div>
+
+              {showEmoji && (
+                <div ref={emojiRef} className="emoji-picker-wrapper">
+                  <EmojiPicker
+                    width={290}
+                    height={330}
+                    onEmojiClick={(emojiData) => {
+                      setContent((prev) => prev + emojiData.emoji);
+                      setShowEmoji(false);
+                    }}
+                  />
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -447,6 +603,32 @@ function Home() {
                         </h5>
 
                         <p>{comment.text}</p>
+                        <button
+                          className="comment-like-btn"
+                          onClick={async (e) => {
+                            e.stopPropagation();
+
+                            try {
+                              const res = await API.put(
+                                `/posts/comment-like/${selectedPost._id}/${index}`,
+                                {
+                                  userId: user._id,
+                                },
+                              );
+
+                              console.log(res.data);
+
+                              setSelectedPost(res.data);
+
+                              fetchPosts();
+                            } catch (error) {
+                              console.log(error.response?.data);
+                              console.log(error);
+                            }
+                          }}
+                        >
+                          ❤️ {comment.likes?.length || 0}
+                        </button>
                       </div>
 
                       {comment.userId === user._id && (
@@ -492,6 +674,79 @@ function Home() {
 
               <button onClick={handleComment}>Post</button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {showLikes && (
+        <div className="modal-overlay" onClick={() => setShowLikes(null)}>
+          <div className="comment-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="comment-header">
+              <h3>Likes</h3>
+
+              <button
+                className="likes-close-btn"
+                onClick={() => setShowLikes(null)}
+              >
+                ✕
+              </button>
+            </div>
+
+            {showLikes.likes?.length > 0 ? (
+              showLikes.likes.map((likedUser) => (
+                <div
+                  key={likedUser._id}
+                  className="likes-user"
+                  onClick={() => navigate(`/user/${likedUser._id}`)}
+                >
+                  <img
+                    src={likedUser.avatar || "https://i.pravatar.cc/100"}
+                    alt=""
+                    className="likes-user-avatar"
+                  />
+                  <span className="likes-user-name">{likedUser.username}</span>
+                </div>
+              ))
+            ) : (
+              <p>No likes yet</p>
+            )}
+          </div>
+        </div>
+      )}
+
+      {showReposts && (
+        <div className="modal-overlay" onClick={() => setShowReposts(null)}>
+          <div className="comment-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="comment-header">
+              <h3>Reposted By</h3>
+
+              <button
+                className="likes-close-btn"
+                onClick={() => setShowReposts(null)}
+              >
+                ✕
+              </button>
+            </div>
+
+            {showReposts.reposts?.length > 0 ? (
+              showReposts.reposts.map((repostUser) => (
+                <div
+                  key={repostUser._id}
+                  className="likes-user"
+                  onClick={() => navigate(`/user/${repostUser._id}`)}
+                >
+                  <img
+                    src={repostUser.avatar || "https://i.pravatar.cc/100"}
+                    alt=""
+                    className="likes-user-avatar"
+                  />
+
+                  <span className="likes-user-name">{repostUser.username}</span>
+                </div>
+              ))
+            ) : (
+              <p>No reposts yet</p>
+            )}
           </div>
         </div>
       )}
