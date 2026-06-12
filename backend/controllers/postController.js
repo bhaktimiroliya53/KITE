@@ -328,3 +328,24 @@ exports.toggleSave = async (req, res) => {
 
   }
 };
+
+// Get User Posts
+exports.getUserPosts = async (req, res) => {
+  try {
+    const posts = await Post.find({
+      userId: req.params.userId,
+    })
+      .populate("userId", "username avatar")
+      .populate("likes", "username avatar")
+      .populate("reposts", "username avatar")
+      .sort({ _id: -1 });
+
+    res.status(200).json(posts);
+  } catch (error) {
+    console.log("GET USER POSTS ERROR =>", error);
+
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};

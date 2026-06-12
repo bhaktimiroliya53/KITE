@@ -4,6 +4,7 @@ const router = express.Router();
 const {
   createPost,
   getPosts,
+  getUserPosts,
   deletePost,
   toggleLike,
   addComment,
@@ -15,6 +16,7 @@ const {
 
 router.post("/", createPost);
 router.get("/", getPosts);
+router.get("/user/:userId", getUserPosts);
 router.delete("/:id", deletePost);
 router.put("/like/:id", toggleLike);
 router.put("/comment/:id", addComment);
