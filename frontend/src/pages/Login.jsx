@@ -7,7 +7,7 @@ function Login() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    email: "",
+    identifier: "",
     password: "",
   });
 
@@ -45,12 +45,11 @@ function Login() {
 
         <form className="auth-form" onSubmit={handleSubmit}>
           <input
-            type="email"
-            name="email"
-            placeholder="Email"
+            type="text"
+            name="identifier"
+            placeholder="Username or Email"
             onChange={handleChange}
           />
-
           <input
             type="password"
             name="password"

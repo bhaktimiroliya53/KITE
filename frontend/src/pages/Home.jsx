@@ -28,6 +28,7 @@ function Home() {
   const [likedAnimation, setLikedAnimation] = useState(null);
   const [showEmoji, setShowEmoji] = useState(false);
   const [showCommentEmoji, setShowCommentEmoji] = useState(false);
+  const [isPosting, setIsPosting] = useState(false);
 
   const emojiRef = useRef(null);
 
@@ -73,6 +74,10 @@ function Home() {
         return;
       }
 
+      setIsPosting(true);
+      console.log("isPosting set to true");
+
+
       const user = JSON.parse(localStorage.getItem("user"));
 
       let imageUrl = "";
@@ -81,7 +86,6 @@ function Home() {
         const formData = new FormData();
 
         formData.append("file", selectedImage);
-
         formData.append("upload_preset", "kite_upload");
 
         const cloudRes = await fetch(
@@ -89,14 +93,12 @@ function Home() {
           {
             method: "POST",
             body: formData,
-          },
+          }
         );
 
         const cloudData = await cloudRes.json();
 
-        console.log("CLOUDINARY RESPONSE =>", cloudData);
         imageUrl = cloudData.secure_url;
-        console.log("IMAGE URL =>", imageUrl);
       }
 
       await API.post("/posts", {
@@ -105,16 +107,19 @@ function Home() {
         userId: user._id,
       });
 
-      console.log("POST SUCCESS");
+      await fetchPosts();
 
       setContent("");
       setImagePreview("");
       setSelectedImage(null);
       setShowModal(false);
 
-      fetchPosts();
     } catch (error) {
       console.log("POST ERROR =>", error);
+    } finally {
+      console.log("isPostindg set to false");
+
+      setIsPosting(false);
     }
   };
 
@@ -288,6 +293,24 @@ function Home() {
             <button onClick={() => setShowModal(true)}>➕</button>
           </div>
 
+          {/* {isPosting && (
+            <div className="feed-progress">
+              <div className="feed-progress-bar"></div>
+            </div>
+          )} */}
+
+          {isPosting && (
+            <div
+              style={{
+                background: "red",
+                color: "white",
+                padding: "20px",
+                fontSize: "30px",
+              }}
+            >
+              POSTING...
+            </div>
+          )}
           {/* DYNAMIC POSTS */}
 
           {posts.map((post) => {
@@ -392,9 +415,8 @@ function Home() {
 
                   <div className="action-item">
                     <button
-                      className={`action-btn ${
-                        isAnimating ? "repost-active" : ""
-                      }`}
+                      className={`action-btn ${isAnimating ? "repost-active" : ""
+                        }`}
                       style={{
                         color: isReposted ? "#22c55e" : "white",
                       }}

@@ -49,6 +49,8 @@ function Chat() {
     try {
       const res = await API.get(`/messages/${currentUser._id}/${userId}`);
 
+      console.log("MESSAGES =>", res.data);
+
       setMessages(res.data);
     } catch (error) {
       console.log(error);
@@ -74,6 +76,8 @@ function Chat() {
   };
 
   const addReaction = async (messageId, emoji) => {
+    console.log("REACTION CLICKED");
+
     try {
       const currentUser = JSON.parse(localStorage.getItem("user"));
 
@@ -119,22 +123,26 @@ function Chat() {
             String(currentUser._id);
 
           return (
-            <div className="message-wrapper">
-              <div
-                className={isMine ? "message-bubble mine" : "message-bubble"}
-                onDoubleClick={() => addReaction(msg._id, "❤️")}
-              >
-                {msg.text}
-              </div>
+            <div
+              key={msg._id}
+              className={isMine ? "message-row mine" : "message-row"}
+            >
+              <div className="message-wrapper">
+                <div
+                  className={isMine ? "message-bubble mine" : "message-bubble"}
+                  onDoubleClick={() => addReaction(msg._id, "❤️")}
+                >
+                  {msg.text}
+                </div>
 
-              <button
-                className="reaction-btn"
-                onClick={() =>
-                  setActiveReaction(activeReaction === msg._id ? null : msg._id)
-                }
-              >
-                😊
-              </button>
+                {msg.reactions?.length > 0 && (
+                  <div className="message-reaction-badge">
+                    {msg.reactions.map((r, i) => (
+                      <span key={i}>{r.emoji}</span>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           );
         })}

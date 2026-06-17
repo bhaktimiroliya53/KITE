@@ -56,24 +56,19 @@ exports.reactToMessage = async (req, res) => {
     );
 
     if (!message) {
-      return res
-        .status(404)
-        .json({ message: "Message not found" });
+      return res.status(404).json({
+        message: "Message not found",
+      });
     }
 
-    const existingReaction =
-      message.reactions.find(
-        (r) => String(r.userId) === String(userId)
-      );
+    const existingReaction = message.reactions.find(
+      (r) => String(r.userId) === String(userId)
+    );
 
     if (existingReaction) {
-      if (existingReaction.emoji === emoji) {
-        message.reactions = message.reactions.filter(
-          (r) => String(r.userId) !== String(userId)
-        );
-      } else {
-        existingReaction.emoji = emoji;
-      }
+      message.reactions = message.reactions.filter(
+        (r) => String(r.userId) !== String(userId)
+      );
     } else {
       message.reactions.push({
         userId,
