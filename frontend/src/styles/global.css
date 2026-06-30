@@ -23,12 +23,16 @@ a {
   align-items: center;
 
   background:
-    radial-gradient(circle at top left,
+    radial-gradient(
+      circle at top left,
       rgba(168, 85, 247, 0.4),
-      transparent 30%),
-    radial-gradient(circle at bottom right,
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at bottom right,
       rgba(236, 72, 153, 0.4),
-      transparent 30%),
+      transparent 30%
+    ),
     #0a0a14;
 }
 
@@ -524,9 +528,7 @@ a {
   height: 100%;
   width: 30%;
   border-radius: 999px;
-  background: linear-gradient(90deg,
-      #8b5cf6,
-      #ec4899);
+  background: linear-gradient(90deg, #8b5cf6, #ec4899);
   animation: feedLoading 1s linear infinite;
 }
 
@@ -1908,7 +1910,7 @@ a {
   border-radius: 20px;
   padding: 2px 8px;
   font-size: 18px;
-  box-shadow: 0 2px 8px rgba(0,0,0,.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .reaction-picker span {
@@ -1942,4 +1944,137 @@ a {
 
 .reaction-btn:hover {
   opacity: 1;
+}
+
+.message-reaction-badge {
+  margin-top: -8px;
+  background: white;
+  color: black;
+  border-radius: 20px;
+  padding: 2px 8px;
+  font-size: 18px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Typing Indicator */
+
+.typing-text {
+  display: block;
+  color: #9ca3af;
+  font-size: 12px;
+  margin-left: 8px;
+  margin-bottom: 4px;
+}
+
+/* delete message modal */
+
+.delete-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
+}
+
+.delete-modal {
+  width: 330px;
+  background: #111827;
+  border-radius: 20px;
+  padding: 24px;
+  text-align: center;
+}
+
+.delete-modal h3 {
+  color: white;
+  margin-bottom: 10px;
+}
+
+.delete-modal p {
+  color: #9ca3af;
+  margin-bottom: 20px;
+}
+
+.delete-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.delete-actions button {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.cancel-btn {
+  background: #374151;
+  color: white;
+}
+
+.delete-btn {
+  background: #ef4444;
+  color: white;
+}
+
+/* image preview for chat */
+
+.image-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 22px;
+  color: white;
+  margin-right: 8px;
+}
+
+.chat-preview-container {
+  background: #111827;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 10px 15px;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.chat-preview {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 2px solid #8b5cf6;
+}
+
+.remove-preview {
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 50%;
+  background: #ef4444;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.chat-image {
+  width: 100%;
+  max-width: 260px;
+  max-height: 320px;
+  object-fit: cover;
+  border-radius: 14px;
+  margin-top: 8px;
+  cursor: pointer;
+}
+
+.message-bubble p {
+  margin: 0;
 }

@@ -5,12 +5,16 @@ const {
   sendMessage,
   getMessages,
   reactToMessage,
+  deleteMessage,
 } = require("../controllers/messageController");
 
 router.post("/", sendMessage);
 
 router.get("/:senderId/:receiverId", getMessages);
 
-router.put("/react/:messageId",reactToMessage);
+router.put("/react/:messageId", reactToMessage);
+
+// 🗑 Delete Message
+router.delete("/:messageId", deleteMessage);
 
 module.exports = router;

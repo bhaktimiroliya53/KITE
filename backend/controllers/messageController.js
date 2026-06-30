@@ -2,15 +2,28 @@ const Message = require("../models/Message");
 
 exports.sendMessage = async (req, res) => {
   try {
-    const { senderId, receiverId, text } = req.body;
+    console.log(req.body);
+    const {
+      senderId,
+      receiverId,
+      text = "",
+      image = "",
+    } = req.body;
 
     const message = await Message.create({
       senderId,
       receiverId,
       text,
+      image,
     });
 
-    res.status(201).json(message);
+    const populatedMessage = await Message.findById(message._id)
+      .populate("senderId", "username avatar")
+      .populate("receiverId", "username avatar");
+
+    global.io.emit("receiveMessage", populatedMessage);
+
+    res.status(201).json(populatedMessage);
   } catch (error) {
     console.log("SEND MESSAGE ERROR =>", error);
 
@@ -79,6 +92,31 @@ exports.reactToMessage = async (req, res) => {
     await message.save();
 
     res.json(message);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+exports.deleteMessage = async (req, res) => {
+  try {
+    const message = await Message.findById(req.params.messageId);
+
+    if (!message) {
+      return res.status(404).json({
+        message: "Message not found",
+      });
+    }
+
+    await Message.findByIdAndDelete(req.params.messageId);
+
+    global.io.emit("messageDeleted", req.params.messageId);
+
+    res.json({
+      success: true,
+      message: "Message deleted successfully",
+    });
   } catch (error) {
     res.status(500).json({
       message: error.message,
