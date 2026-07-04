@@ -5,6 +5,7 @@ const {
   getProfile,
   updateProfile,
   toggleFollow,
+  updateSettings,
 } = require("../controllers/userController");
 
 const authMiddleware = require("../middleware/authMiddleware");
@@ -18,5 +19,7 @@ router.put("/follow/:id", toggleFollow);
 router.get("/:id", getProfile);
 
 router.put("/:id", updateProfile);
+
+router.put("/settings/:id", updateSettings);
 
 module.exports = router;

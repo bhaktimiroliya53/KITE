@@ -42,6 +42,22 @@ const userSchema = new mongoose.Schema(
         ref: "User",
       },
     ],
+    privateAccount: {
+      type: Boolean,
+      default: false,
+    },
+
+    showActivity: {
+      type: Boolean,
+      default: true,
+    },
+
+    allowMessages: {
+      type: Boolean,
+      default: true,
+    },
+
+
   },
   { timestamps: true }
 );

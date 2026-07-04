@@ -29,6 +29,7 @@ function Home() {
   const [showEmoji, setShowEmoji] = useState(false);
   const [showCommentEmoji, setShowCommentEmoji] = useState(false);
   const [isPosting, setIsPosting] = useState(false);
+  const [theme, setTheme] = useState(localStorage.getItem("theme") || "dark");
 
   const emojiRef = useRef(null);
 
@@ -38,6 +39,17 @@ function Home() {
 
     navigate("/");
   };
+
+  const toggleTheme = () => {
+    const newTheme = theme === "dark" ? "light" : "dark";
+
+    setTheme(newTheme);
+
+    localStorage.setItem("theme", newTheme);
+
+    document.body.setAttribute("data-theme", newTheme);
+  };
+
   const fetchPosts = async () => {
     try {
       const res = await API.get("/posts");
@@ -49,6 +61,10 @@ function Home() {
   useEffect(() => {
     fetchPosts();
   }, []);
+
+  useEffect(() => {
+    document.body.setAttribute("data-theme", theme);
+  }, [theme]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -77,7 +93,6 @@ function Home() {
       setIsPosting(true);
       console.log("isPosting set to true");
 
-
       const user = JSON.parse(localStorage.getItem("user"));
 
       let imageUrl = "";
@@ -93,7 +108,7 @@ function Home() {
           {
             method: "POST",
             body: formData,
-          }
+          },
         );
 
         const cloudData = await cloudRes.json();
@@ -113,7 +128,6 @@ function Home() {
       setImagePreview("");
       setSelectedImage(null);
       setShowModal(false);
-
     } catch (error) {
       console.log("POST ERROR =>", error);
     } finally {
@@ -239,11 +253,13 @@ function Home() {
 
           <button onClick={() => navigate("/search")}>🔍 Explore</button>
 
-          <button>🔔 Notifications</button>
+          {/* <button>🔔 Notifications</button> */}
 
           <button onClick={() => navigate("/messages")}>💬 Messages</button>
           <button onClick={() => navigate("/profile")}>👤 Profile</button>
-          <button>⚙️ Settings</button>
+          {/* <button onClick={toggleTheme}>
+            {theme === "dark" ? "☀️ Light Mode" : "🌙 Dark Mode"}
+          </button> */}
 
           <button className="logout-btn" onClick={handleLogout}>
             🚪 Logout
@@ -415,8 +431,9 @@ function Home() {
 
                   <div className="action-item">
                     <button
-                      className={`action-btn ${isAnimating ? "repost-active" : ""
-                        }`}
+                      className={`action-btn ${
+                        isAnimating ? "repost-active" : ""
+                      }`}
                       style={{
                         color: isReposted ? "#22c55e" : "white",
                       }}
@@ -497,15 +514,25 @@ function Home() {
       {/* RIGHT BAR */}
 
       <div className="rightbar">
-        <h3>Trending Topics</h3>
+        <h3>🔥 Trending Topics</h3>
 
         <div className="trend">#KITE</div>
 
-        <div className="trend">#React</div>
+        <div className="trend">#ReactJS</div>
 
         <div className="trend">#MERN</div>
 
+        <div className="trend">#NodeJS</div>
+
+        <div className="trend">#MongoDB</div>
+
+        <div className="trend">#ExpressJS</div>
+
+        <div className="trend">#JavaScript</div>
+
         <div className="trend">#WebDevelopment</div>
+
+        
       </div>
       {showModal && (
         <div className="modal-overlay">
