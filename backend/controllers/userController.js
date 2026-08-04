@@ -99,3 +99,32 @@ exports.toggleFollow = async (req, res) => {
     });
   }
 };
+
+// Update Privacy & Theme
+exports.updateSettings = async (req, res) => {
+  try {
+    const {
+      privateAccount,
+      showActivity,
+      allowMessages,
+      theme,
+    } = req.body;
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        privateAccount,
+        showActivity,
+        allowMessages,
+        theme,
+      },
+      { new: true }
+    );
+
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
