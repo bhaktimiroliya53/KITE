@@ -1,4 +1,4 @@
-import logo from "../assets/kite-logo.png";
+import logo from "../assets/logo/kite-brand-logo.png";
 
 function Navbar() {
   return (

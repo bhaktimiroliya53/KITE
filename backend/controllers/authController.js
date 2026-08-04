@@ -1,7 +1,7 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-
+const Notification = require("../models/Notification");
 // Register User
 exports.registerUser = async (req, res) => {
   try {
@@ -24,6 +24,16 @@ exports.registerUser = async (req, res) => {
       email,
       password: hashedPassword,
     });
+
+    const notification = await Notification.create({
+      type: "user",
+      message: `${username} has joined KITE`,
+    });
+
+    global.io.emit(
+      "newNotification",
+      notification
+    );
 
     res.status(201).json({
       message: "User registered successfully",

@@ -1,0 +1,49 @@
+.top-performers-card{
+background:rgba(255,255,255,.05);
+border:1px solid rgba(255,255,255,.08);
+border-radius:20px;
+padding:25px;
+backdrop-filter:blur(20px);
+}
+
+.top-performers-card h2{
+color:white;
+margin-bottom:20px;
+}
+
+.performer-item{
+display:flex;
+gap:15px;
+align-items:center;
+padding:15px 0;
+border-bottom:1px solid rgba(255,255,255,.05);
+}
+
+.performer-item:last-child{
+border:none;
+}
+
+.performer-rank{
+font-size:28px;
+}
+
+.performer-info{
+display:flex;
+flex-direction:column;
+}
+
+.performer-info h4{
+margin:0;
+color:white;
+}
+
+.performer-info span{
+color:#9ca3af;
+font-size:13px;
+margin-top:2px;
+}
+
+.no-data{
+color:#9ca3af;
+text-align:center;
+}

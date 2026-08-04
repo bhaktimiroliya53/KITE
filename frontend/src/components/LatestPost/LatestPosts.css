@@ -1,0 +1,41 @@
+.latest-posts-card{
+background:rgba(255,255,255,.05);
+border:1px solid rgba(255,255,255,.08);
+border-radius:20px;
+padding:25px;
+}
+
+.latest-posts-card h2{
+margin-bottom:20px;
+color:white;
+}
+
+.latest-post{
+display:flex;
+align-items:center;
+gap:15px;
+padding:12px 0;
+border-bottom:1px solid rgba(255,255,255,.05);
+}
+
+.latest-post:last-child{
+border:none;
+}
+
+.latest-post img{
+width:60px;
+height:60px;
+border-radius:12px;
+object-fit:cover;
+}
+
+.latest-post h4{
+color:white;
+font-size:15px;
+margin-bottom:5px;
+}
+
+.latest-post span{
+color:#8b8b8b;
+font-size:13px;
+}

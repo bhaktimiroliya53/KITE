@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import API from "../services/api";
+import API from "../../services/api";
 import { useNavigate } from "react-router-dom";
 
 function Profile() {

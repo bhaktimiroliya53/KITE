@@ -1,0 +1,147 @@
+.sidebar{
+width:270px;
+height:100vh;
+position:fixed;
+left:0;
+top:0;
+display:flex;
+flex-direction:column;
+justify-content:space-between;
+padding:30px 20px;
+background:rgba(10,15,30,.96);
+backdrop-filter:blur(25px);
+border-right:1px solid rgba(139,92,246,.15);
+box-shadow:10px 0 40px rgba(0,0,0,.35);
+z-index:1000;
+}
+
+.sidebar-top{
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+text-align:center;
+padding:10px 0 20px;
+}
+
+.sidebar-logo{
+width:170px;
+margin:0 auto 4px;
+}
+
+.sidebar-top span{
+margin-top:2px;
+}
+
+.sidebar-logo:hover{
+transform:rotate(-8deg) scale(1.08);
+}
+
+.sidebar-top h2{
+margin:2;
+font-size:20px;
+font-weight:700;
+color:#fff;
+}
+
+.sidebar-top span{
+display:block;
+margin-top:auto;
+color:#8b5cf6;
+letter-spacing:2px;
+font-size:12px;
+}
+
+.sidebar-menu{
+display:flex;
+flex-direction:column;
+gap:12px;
+margin-top:40px;
+}
+
+.sidebar-btn{
+position:relative;
+display:flex;
+align-items:center;
+gap:14px;
+width:100%;
+padding:15px 18px;
+background:transparent;
+border:none;
+border-radius:14px;
+color:#d1d5db;
+font-size:15px;
+font-weight:600;
+cursor:pointer;
+transition:.35s;
+overflow:hidden;
+}
+
+.sidebar-btn span{
+font-size:20px;
+}
+
+.sidebar-btn:hover{
+background:rgba(139,92,246,.15);
+color:#fff;
+transform:translateX(6px);
+}
+
+.sidebar-btn.active{
+background:linear-gradient(90deg,#7c3aed,#8b5cf6);
+color:white;
+box-shadow:0 12px 35px rgba(139,92,246,.45);
+}
+
+.sidebar-btn.active::before{
+content:"";
+position:absolute;
+left:0;
+top:10%;
+width:4px;
+height:80%;
+background:white;
+border-radius:10px;
+}
+
+.sidebar-bottom{
+padding-top:20px;
+border-top:1px solid rgba(255,255,255,.08);
+}
+
+.admin-info{
+margin-bottom:20px;
+}
+
+.admin-info h4{
+margin:0;
+color:white;
+}
+
+.admin-info p{
+margin-top:8px;
+color:#22c55e;
+font-size:14px;
+}
+
+.logout-button{
+width:100%;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:10px;
+padding:14px;
+border:none;
+border-radius:14px;
+background:#ef8383;
+color:white;
+font-size:15px;
+font-weight:600;
+cursor:pointer;
+transition:.35s;
+}
+
+.logout-button svg{
+width:18px;
+height:18px;
+}

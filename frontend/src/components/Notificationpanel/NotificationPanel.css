@@ -1,0 +1,47 @@
+.notification-panel{
+background:rgba(255,255,255,.05);
+backdrop-filter:blur(20px);
+border:1px solid rgba(255,255,255,.08);
+border-radius:20px;
+padding:20px;
+margin-top:30px;
+}
+
+.notification-panel h3{
+color:white;
+margin-bottom:20px;
+font-size:22px;
+}
+
+.notification-card{
+padding:15px;
+margin-bottom:12px;
+background:rgba(255,255,255,.05);
+border-radius:12px;
+border-left:4px solid #8b5cf6;
+transition:.3s;
+}
+
+.notification-card:hover{
+transform:translateX(6px);
+background:rgba(139,92,246,.15);
+}
+
+.notification-card p{
+margin:0;
+color:white;
+font-size:15px;
+}
+
+.notification-card span{
+display:block;
+margin-top:8px;
+font-size:12px;
+color:#9ca3af;
+}
+
+.no-notification{
+color:#9ca3af;
+text-align:center;
+padding:20px 0;
+}
