@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 import API from "../../services/api.js";
 import "../styles/AdminDashboard.css";
-import Sidebar from "../../components/Sidebar/Sidebar.jsx";
+import Sidebar from "../Sidebar/Sidebar.jsx";
 import Topbar from "./Topbar.js";
-import DashboardCards from "../../components/DashboardCards/DashboardCards.jsx";
-import Charts from "../../components/Charts/Charts.jsx";
-import ActivityFeed from "../../components/ActiveFeed/ActivityFeed.jsx";
-import LatestUsers from "../../components/LatestUsers/LatestUsers.jsx";
-import LatestPosts from "../../components/LatestPost/LatestPosts.jsx";
-import TopPerformers from "../../components/TopPerformers/TopPerformers.jsx";
+import DashboardCards from "../DashboardCards/DashboardCards.jsx";
+import Charts from "../Charts/Charts.jsx";
+import ActivityFeed from "../ActiveFeed/ActivityFeed.jsx";
+import LatestUsers from "../LatestUsers/LatestUsers.jsx";
+import LatestPosts from "../LatestPost/LatestPosts.jsx";
+import TopPerformers from "../TopPerformers/TopPerformers.jsx";
 import { useRef } from "react";
-import NotificationPanel from "../../components/Notificationpanel/NotificationPanel.jsx";
+import NotificationPanel from "../Notificationpanel/NotificationPanel.jsx";
 
 function AdminDashboard() {
     const [stats, setStats] = useState({
