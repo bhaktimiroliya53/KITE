@@ -12,6 +12,7 @@ import UserProfile from "./pages/UserProfile";
 import PostView from "./pages/PostView";
 import Messages from "./pages/Messages";
 import Chat from "./pages/Chat";
+import AdminDashboard from "./pages/AdminDashboard";
 
 function App() {
   return (
@@ -40,6 +41,8 @@ function App() {
         <Route path="/messages" element={<Messages />} />
 
         <Route path="/chat/:userId" element={<Chat />} />
+
+        <Route path="/admin" element={<AdminDashboard />} />
         
       </Routes>
     </BrowserRouter>

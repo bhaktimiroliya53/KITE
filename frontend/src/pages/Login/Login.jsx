@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import API from "../services/api";
-import logo from "../assets/kite-logo.png";
+import API from "../../services/api";
+import logo from "../assets/logo/kite-brand-logo.png";
+import kiteBrandLogo from "../assets/logo/kite-brand-logo.png";
 
 function Login() {
   const navigate = useNavigate();
@@ -41,7 +42,10 @@ function Login() {
   return (
     <div className="auth-container">
       <div className="auth-card">
-        <img src={logo} alt="KITE" className="logo" />
+        <img
+          src={kiteBrandLogo}
+          alt="KITE"
+        />
 
         <form className="auth-form" onSubmit={handleSubmit}>
           <input

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
-import logo from "../assets/kite-logo.png";
+import logo from "../assets/logo/kite-brand-logo.png";
 import { useNavigate } from "react-router-dom";
-import API from "../services/api";
+import API from "../../services/api";
 import { FiBookmark } from "react-icons/fi";
 import { BsBookmarkFill } from "react-icons/bs";
 import { FaHeart, FaRegHeart, FaRegComment } from "react-icons/fa";
