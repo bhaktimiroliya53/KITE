@@ -8,7 +8,7 @@ import {
     LogOut,
 } from "lucide-react";
 import "../../styles/Sidebar.css";
-import kiteBrandLogo from "../../assets/logo/kite-brand-logo.png";
+import logo from "../../../assets/logo/kite-brand-logo.png";
 
 function Sidebar({ onNavigate }) {
     const [active, setActive] = useState("Dashboard");
