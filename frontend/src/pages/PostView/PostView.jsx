@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import API from "../services/api";
+import API from "../../services/api";
 
 function PostView() {
   const { id } = useParams();

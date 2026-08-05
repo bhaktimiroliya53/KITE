@@ -1,0 +1,48 @@
+/* ==========================================
+   RIGHTBAR
+========================================== */
+
+.rightbar {
+  width: 250px;
+  min-width: 250px;
+  flex-shrink: 0;
+  padding: 30px;
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.rightbar h3 {
+  margin-bottom: 25px;
+  font-size: 24px;
+}
+
+.trend {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 18px;
+  border-radius: 16px;
+  margin-bottom: 15px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.trend:hover {
+  background: rgba(168, 85, 247, 0.15);
+}
+
+.view-more-btn {
+  width: 100%;
+  margin-top: 18px;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(45deg, #7c3aed, #ec4899);
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.view-more-btn:hover {
+  transform: translateY(-2px);
+  opacity: 0.95;
+}

@@ -1,7 +1,7 @@
 import { Bell, CheckCheck } from "lucide-react";
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
-import API from "../../services/api";
+import API from "../../../services/api";
 import "../../styles/NotificationBell.css";
 
 function NotificationBell() {

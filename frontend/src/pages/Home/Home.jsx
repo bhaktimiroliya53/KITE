@@ -6,6 +6,9 @@ import { FiBookmark } from "react-icons/fi";
 import { BsBookmarkFill } from "react-icons/bs";
 import { FaHeart, FaRegHeart, FaRegComment } from "react-icons/fa";
 import EmojiPicker from "emoji-picker-react";
+import Rightbar from "../../components/user/Rightbar/Rightbar";
+import Sidebar from "../../components/user/Sidebar/Sidebar";
+import Topbar from "../../components/user/Topbar/Topbar";
 
 import { FiRepeat } from "react-icons/fi";
 
@@ -243,50 +246,11 @@ function Home() {
 
   return (
     <div className="home-page">
-      {/* SIDEBAR */}
 
-      <div className="sidebar">
-        <div className="menu">
-          <button onClick={() => (window.location.href = "/home")}>
-            🏠 Home
-          </button>
-
-          <button onClick={() => navigate("/search")}>🔍 Explore</button>
-
-          {/* <button>🔔 Notifications</button> */}
-
-          <button onClick={() => navigate("/messages")}>💬 Messages</button>
-          <button onClick={() => navigate("/profile")}>👤 Profile</button>
-          {/* <button onClick={toggleTheme}>
-            {theme === "dark" ? "☀️ Light Mode" : "🌙 Dark Mode"}
-          </button> */}
-
-          <button className="logout-btn" onClick={handleLogout}>
-            🚪 Logout
-          </button>
-        </div>
-      </div>
-
-      {/* MAIN CONTENT */}
-
+    <Sidebar onLogout={handleLogout} />
+     
       <div className="main-content">
-        <div className="topbar">
-          <div className="menu-icon">☰</div>
-
-          <div className="center-logo">
-            <img src={logo} alt="KITE" />
-          </div>
-
-          <div className="top-icons">
-            <img
-              src={user?.avatar || "https://i.pravatar.cc/150"}
-              alt=""
-              className="top-profile"
-              onClick={() => navigate("/profile")}
-              style={{ cursor: "pointer" }}
-            />
-          </div>
-        </div>
+        <Topbar user={user} />
 
         {/* FEED */}
 
@@ -511,29 +475,8 @@ function Home() {
         </div>
       </div>
 
-      {/* RIGHT BAR */}
+    <Rightbar />
 
-      <div className="rightbar">
-        <h3>🔥 Trending Topics</h3>
-
-        <div className="trend">#KITE</div>
-
-        <div className="trend">#ReactJS</div>
-
-        <div className="trend">#MERN</div>
-
-        <div className="trend">#NodeJS</div>
-
-        <div className="trend">#MongoDB</div>
-
-        <div className="trend">#ExpressJS</div>
-
-        <div className="trend">#JavaScript</div>
-
-        <div className="trend">#WebDevelopment</div>
-
-        
-      </div>
       {showModal && (
         <div className="modal-overlay">
           <div className="post-modal">

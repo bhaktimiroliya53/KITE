@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import API from "../services/api";
+import API from "../../services/api";
 import logo from "../assets/logo/kite-brand-logo.png";
 
 function Register() {

@@ -1,9 +1,9 @@
 import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
-import API from "../services/api";
+import API from "../../services/api";
 import EmojiPicker from "emoji-picker-react";
-import socket from "../services/socket";
+import socket from "../../services/socket";
 
 function Chat() {
   const { userId } = useParams();
