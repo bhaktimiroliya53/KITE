@@ -1,18 +1,19 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Home from "./pages/Home";
-import CreatePost from "./pages/CreatePost";
-import Profile from "./pages/Profile";
-import EditProfile from "./pages/EditProfile";
-import SavedPosts from "./pages/SavedPosts";
-import Search from "./pages/Search";
-import UserProfile from "./pages/UserProfile";
-import PostView from "./pages/PostView";
-import Messages from "./pages/Messages";
-import Chat from "./pages/Chat";
-import AdminDashboard from "./pages/AdminDashboard";
+import Login from "./pages/Login/Login";
+import Register from "./pages/Register/Register";
+import Home from "./pages/Home/Home";
+import AdminDashboard from "./pages/Admin/AdminDashboard";
+import Profile from "./pages/Profile/Profile";
+import EditProfile from "./pages/Profile/EditProfile";
+import Search from "./pages/Search/Search";
+import Chat from "./pages/Chat/Chat";
+import Notifications from "./pages/Notification/Notifications";
+import SavedPosts from "./pages/SavedPosts/SavedPosts";
+import UserProfile from "./pages/UserProfile/UserProfile";
+import Explore from "./pages/Explore/Explore";
+import PostView from "./pages/PostView/PostView";
+import Messages from "./pages/Messages/Messages";
 
 function App() {
   return (

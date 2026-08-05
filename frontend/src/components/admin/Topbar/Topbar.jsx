@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import NotificationBell from "./NotificationBell";
+import NotificationBell from "../NotificationBell/NotificationBell";
 import "../../styles/Topbar.css";
-import kiteIcon from "../../assets/logo/kite-icon.png";
+import logo from "../../../assets/logo/kite-icon.png";
 
 function Topbar() {
 

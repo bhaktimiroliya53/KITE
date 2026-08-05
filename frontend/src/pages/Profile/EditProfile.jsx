@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../../services/api";
-import "../styles/Privacy.css";
-import "../styles/EditProfile.css";
+import "../../styles/user/Privacy.css";
+import "../../styles/user/EditProfile.css";
 
 function EditProfile() {
   const navigate = useNavigate();

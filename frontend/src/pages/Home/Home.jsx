@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import logo from "../assets/logo/kite-brand-logo.png";
+import logo from "../../assets/logo/kite-brand-logo.png";
 import { useNavigate } from "react-router-dom";
 import API from "../../services/api";
 import { FiBookmark } from "react-icons/fi";

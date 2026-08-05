@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import API from "../../services/api";
 import logo from "../assets/logo/kite-brand-logo.png";
-import kiteBrandLogo from "../assets/logo/kite-brand-logo.png";
+import logo from "../../assets/logo/kite-brand-logo.png";
 
 function Login() {
   const navigate = useNavigate();

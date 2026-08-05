@@ -1,16 +1,19 @@
-import React, { useEffect, useState } from "react";
-import API from "../../../services/api.js";
-import "../styles/AdminDashboard.css";
-import Sidebar from "../Sidebar/Sidebar.jsx";
-import Topbar from "./Topbar.js";
-import DashboardCards from "../DashboardCards/DashboardCards.jsx";
-import Charts from "../Charts/Charts.jsx";
-import ActivityFeed from "../ActiveFeed/ActivityFeed.jsx";
-import LatestUsers from "../LatestUsers/LatestUsers.jsx";
-import LatestPosts from "../LatestPost/LatestPosts.jsx";
-import TopPerformers from "../TopPerformers/TopPerformers.jsx";
-import { useRef } from "react";
-import NotificationPanel from "../Notificationpanel/NotificationPanel.jsx";
+import React, { useEffect, useState, useRef } from "react";
+import API from "../../services/api";
+
+import "../../styles/admin/AdminDashboard.css";
+
+import Sidebar from "../../components/admin/Sidebar/Sidebar";
+import Topbar from "../../components/admin/Topbar/Topbar";
+import DashboardCards from "../../components/admin/DashboardCards/DashboardCards";
+import Charts from "../../components/admin/Charts/Charts";
+import ActivityFeed from "../../components/admin/ActiveFeed/ActivityFeed";
+import LatestUsers from "../../components/admin/LatestUsers/LatestUsers";
+import LatestPosts from "../../components/admin/LatestPost/LatestPosts";
+import TopPerformers from "../../components/admin/TopPerformers/TopPerformers";
+import NotificationPanel from "../../components/admin/Notificationpanel/NotificationPanel";
+import Topbar from "../Topbar/Topbar";
+
 
 function AdminDashboard() {
     const [stats, setStats] = useState({
