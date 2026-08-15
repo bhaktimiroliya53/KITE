@@ -1,4 +1,4 @@
-import "../../styles/TopPerformers.css";
+import "../../../styles/admin/TopPerformers.css";
 
 function TopPerformers({ topUsers = [] }) {
     return (

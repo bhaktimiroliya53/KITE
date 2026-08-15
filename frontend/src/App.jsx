@@ -14,6 +14,7 @@ import UserProfile from "./pages/UserProfile/UserProfile";
 import Explore from "./pages/Explore/Explore";
 import PostView from "./pages/PostView/PostView";
 import Messages from "./pages/Messages/Messages";
+import CreatePost from "./components/user/CreatePost/CreatePost";
 
 function App() {
   return (

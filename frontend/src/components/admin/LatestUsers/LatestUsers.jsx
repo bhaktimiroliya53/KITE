@@ -1,4 +1,4 @@
-import "../../styles/LatestUsers.css";
+import "../../../styles/admin/LatestUsers.css";
 
 function LatestUsers({ users }) {
     return (
@@ -10,7 +10,7 @@ function LatestUsers({ users }) {
                 <div className="latest-user" key={user._id}>
 
                     <img
-                        src={user.avatar}
+                        src={user.profilePic || "https://placehold.co/50x50"}
                         alt={user.username}
                     />
 

@@ -1,4 +1,4 @@
-import "../../styles/ActivityFeed.css";
+import "../../../styles/admin/ActivityFeed.css";
 
 function ActivityFeed() {
     const activities = [

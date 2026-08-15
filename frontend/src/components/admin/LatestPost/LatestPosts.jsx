@@ -1,4 +1,4 @@
-import "../../styles/LatestPosts.css";
+import "../../../styles/admin/LatestPosts.css";
 
 function LatestPosts({ posts }) {
     return (
@@ -11,7 +11,7 @@ function LatestPosts({ posts }) {
                 <div className="latest-post" key={post._id}>
 
                     <img
-                        src={post.image}
+                        src={post.image || "https://placehold.co/600x400"}
                         alt="post"
                     />
 

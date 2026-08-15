@@ -1,15 +1,15 @@
 import { Bell, CheckCheck } from "lucide-react";
 import { useEffect, useState } from "react";
-import { io } from "socket.io-client";
+import socket from "../../../services/socket";
 import API from "../../../services/api";
-import "../../styles/NotificationBell.css";
+import "../../../styles/admin/NotificationBell.css";
 
 function NotificationBell() {
     const [open, setOpen] = useState(false);
     const [notifications, setNotifications] = useState([]);
 
     const user = JSON.parse(localStorage.getItem("user"));
-    const socket = io("http://localhost:8000");
+    
     useEffect(() => {
 
         fetchNotifications();

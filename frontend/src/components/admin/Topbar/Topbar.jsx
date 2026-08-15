@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import NotificationBell from "../NotificationBell/NotificationBell";
-import "../../styles/Topbar.css";
+import "../../../styles/admin/Topbar.css";
 import logo from "../../../assets/logo/kite-icon.png";
 
 function Topbar() {
@@ -88,7 +88,7 @@ function Topbar() {
                 <div className="admin-profile">
 
                     <img
-                        src={kiteIcon}
+                        src={logo}
                         alt="Admin"
                     />
 

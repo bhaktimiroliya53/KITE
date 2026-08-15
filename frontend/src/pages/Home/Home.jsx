@@ -247,8 +247,8 @@ function Home() {
   return (
     <div className="home-page">
 
-    <Sidebar onLogout={handleLogout} />
-     
+      <Sidebar onLogout={handleLogout} />
+
       <div className="main-content">
         <Topbar user={user} />
 
@@ -324,7 +324,7 @@ function Home() {
                 {post.image && (
                   <div className="image-wrapper">
                     <img
-                      src={post.image}
+                      src={post.image || "https://placehold.co/600x400"}
                       alt=""
                       className="post-image"
                       onDoubleClick={(e) => {
@@ -395,9 +395,8 @@ function Home() {
 
                   <div className="action-item">
                     <button
-                      className={`action-btn ${
-                        isAnimating ? "repost-active" : ""
-                      }`}
+                      className={`action-btn ${isAnimating ? "repost-active" : ""
+                        }`}
                       style={{
                         color: isReposted ? "#22c55e" : "white",
                       }}
@@ -475,7 +474,7 @@ function Home() {
         </div>
       </div>
 
-    <Rightbar />
+      <Rightbar />
 
       {showModal && (
         <div className="modal-overlay">

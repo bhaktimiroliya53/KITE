@@ -304,7 +304,8 @@ function Chat() {
 
       {imagePreview && (
         <div className="chat-preview-container">
-          <img src={imagePreview} alt="preview" className="chat-preview" />
+          <img src={imagePreview || "https://placehold.co/600x400"}
+           alt="preview" className="chat-preview" />
 
           <button
             className="remove-preview"

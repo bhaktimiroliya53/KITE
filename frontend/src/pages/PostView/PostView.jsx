@@ -84,7 +84,7 @@ function PostView() {
 
         {post.image && (
           <img
-            src={post.image}
+            src={post.image || "https://placehold.co/600x400"}
             alt=""
             style={{
               width: "100%",

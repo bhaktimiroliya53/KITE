@@ -1,5 +1,5 @@
 import React from "react";
-import "../../styles/NotificationPanel.css";
+import "../../../styles/admin/NotificationPanel.css";
 
 function NotificationPanel({ notifications }) {
     return (

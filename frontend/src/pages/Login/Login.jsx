@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import API from "../../services/api";
-import logo from "../assets/logo/kite-brand-logo.png";
-import logo from "../../assets/logo/kite-brand-logo.png";
+import "../../styles/user/auth.css";
+import kiteBrandLogo from "../../assets/logo/kite-brand-logo.png";
 
 function Login() {
   const navigate = useNavigate();
@@ -22,16 +22,11 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log("LOGIN SUBMIT CALLED");
-    console.log(formData);
     try {
       const res = await API.post("/auth/login", formData);
 
       localStorage.setItem("token", res.data.token);
-
       localStorage.setItem("user", JSON.stringify(res.data.user));
-
-      alert("✅ Login Successful!");
 
       navigate("/home");
     } catch (error) {
@@ -45,6 +40,7 @@ function Login() {
         <img
           src={kiteBrandLogo}
           alt="KITE"
+          className="logo"
         />
 
         <form className="auth-form" onSubmit={handleSubmit}>
@@ -52,12 +48,15 @@ function Login() {
             type="text"
             name="identifier"
             placeholder="Username or Email"
+            value={formData.identifier}
             onChange={handleChange}
           />
+
           <input
             type="password"
             name="password"
             placeholder="Password"
+            value={formData.password}
             onChange={handleChange}
           />
 
@@ -65,8 +64,8 @@ function Login() {
         </form>
 
         <span>
-          Don’t have an account?
-          <Link to="/register">Register</Link>
+          Don't have an account?
+          <Link to="/register"> Register</Link>
         </span>
       </div>
     </div>

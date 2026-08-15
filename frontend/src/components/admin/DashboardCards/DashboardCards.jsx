@@ -1,4 +1,4 @@
-import "../../styles/Cards.css";
+import "../../../styles/admin/DashboardCard.css";
 
 function DashboardCards({ stats }) {
     const cards = [

@@ -1,3 +1,4 @@
+import "../../../styles/admin/Charts.css";
 import {
   ResponsiveContainer,
   LineChart,
@@ -7,8 +8,6 @@ import {
   YAxis,
   Tooltip,
 } from "recharts";
-
-import "../../styles/Charts.css";
 
 const data = [
   { name: "Mon", users: 2 },

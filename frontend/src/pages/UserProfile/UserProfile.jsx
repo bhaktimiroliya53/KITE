@@ -131,7 +131,8 @@ function UserProfile() {
         {posts.map((post) => (
           <div className="profile-post-card" key={post._id}>
             {post.image ? (
-              <img src={post.image} alt="" className="profile-post-image" />
+              <img src={post.image || "https://placehold.co/600x400"}
+               alt="" className="profile-post-image" />
             ) : (
               <div className="text-post-card">{post.content}</div>
             )}

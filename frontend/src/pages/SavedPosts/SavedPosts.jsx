@@ -50,7 +50,8 @@ function SavedPosts() {
             style={{ cursor: "pointer" }}
           >
             {post.image ? (
-              <img src={post.image} alt="" className="profile-post-image" />
+              <img src={post.image || "https://placehold.co/600x400"}
+                alt="" className="profile-post-image" />
             ) : (
               <div className="text-post-card">{post.content}</div>
             )}
@@ -75,7 +76,8 @@ function SavedPosts() {
             <p>{selectedPost.content}</p>
 
             {selectedPost.image && (
-              <img src={selectedPost.image} alt="" className="preview-image" />
+              <img src={selectedPost.image || "https://placehold.co/600x400"}
+                alt="" className="preview-image" />
             )}
 
             <div className="preview-stats">

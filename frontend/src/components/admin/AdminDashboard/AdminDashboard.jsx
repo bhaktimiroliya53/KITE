@@ -247,7 +247,7 @@ function AdminDashboard() {
                                 <tr key={item._id}>
                                     <td>
                                         <img
-                                            src={item.avatar}
+                                            src={item.avatar || "https://placehold.co/50x50"}
                                             alt={item.username}
                                             className="user-avatar"
                                         />

@@ -149,10 +149,11 @@ function Profile() {
 
       <div className="profile-posts-grid">
         {posts.map((post) => (
-          <div className="profile-post-card" key={post._id}   onClick={() => navigate(`/post/${post._id}`)}
->
+          <div className="profile-post-card" key={post._id} onClick={() => navigate(`/post/${post._id}`)}
+          >
             {post.image ? (
-              <img src={post.image} alt="" className="profile-post-image" />
+              <img src={post.image || "https://placehold.co/600x400"}
+                alt="" className="profile-post-image" />
             ) : (
               <div className="text-post-card">{post.content}</div>
             )}
