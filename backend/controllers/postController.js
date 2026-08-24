@@ -134,9 +134,7 @@ exports.toggleCommentLike = async (req, res) => {
   try {
     const { userId } = req.body;
 
-    const post = await Post.findById(
-      req.params.postId
-    );
+    const post = await Post.findById(req.params.postId);
 
     if (!post) {
       return res.status(404).json({
@@ -144,8 +142,7 @@ exports.toggleCommentLike = async (req, res) => {
       });
     }
 
-    const comment =
-      post.comments[req.params.commentIndex];
+    const comment = post.comments[req.params.commentIndex];
 
     if (!comment) {
       return res.status(404).json({
@@ -157,14 +154,14 @@ exports.toggleCommentLike = async (req, res) => {
       comment.likes = [];
     }
 
-    const alreadyLiked =
-      comment.likes.includes(userId);
+    const alreadyLiked = comment.likes.some(
+      (id) => id.toString() === userId.toString()
+    );
 
     if (alreadyLiked) {
-      comment.likes =
-        comment.likes.filter(
-          (id) => id !== userId
-        );
+      comment.likes = comment.likes.filter(
+        (id) => id.toString() !== userId.toString()
+      );
     } else {
       comment.likes.push(userId);
     }
@@ -172,23 +169,33 @@ exports.toggleCommentLike = async (req, res) => {
     await post.save();
 
     res.status(200).json(post);
-
   } catch (error) {
+    console.log("COMMENT LIKE ERROR =>", error);
+
     res.status(500).json({
       message: error.message,
     });
   }
 };
 
-// Add Comment
+// Add Comment// Add Comment
 exports.addComment = async (req, res) => {
   try {
+    const { userId, avatar, text, image } = req.body;
 
-    const { userId, username, avatar, text } = req.body;
+    if (!userId) {
+      return res.status(400).json({
+        message: "userId is required",
+      });
+    }
 
-    const post = await Post.findById(
-      req.params.id
-    );
+    if (!text?.trim() && !image) {
+      return res.status(400).json({
+        message: "Comment cannot be empty",
+      });
+    }
+
+    const post = await Post.findById(req.params.id);
 
     if (!post) {
       return res.status(404).json({
@@ -198,20 +205,92 @@ exports.addComment = async (req, res) => {
 
     post.comments.push({
       userId,
-      username,
-      avatar,
-      text,
+      avatar: avatar || "",
+      text: text || "",
+      image: image || "",
+      likes: [],
+      replies: [],
     });
 
     await post.save();
 
     res.status(200).json(post);
-
   } catch (error) {
     console.log("COMMENT ERROR =>", error);
 
     res.status(500).json({
       message: error.message,
+    });
+  }
+};
+
+exports.addReply = async (req,res)=>{
+  try {
+
+    const {
+      userId,
+      avatar,
+      text,
+      image
+    } = req.body;
+
+
+    const post = await Post.findById(
+      req.params.postId
+    );
+
+
+    if(!post){
+      return res.status(404).json({
+        message:"Post not found"
+      });
+    }
+
+
+    const comment =
+      post.comments[
+        req.params.commentIndex
+      ];
+
+
+    if(!comment){
+      return res.status(404).json({
+        message:"Comment not found"
+      });
+    }
+
+
+    if(!comment.replies){
+      comment.replies=[];
+    }
+
+
+    comment.replies.push({
+
+      userId,
+      avatar,
+      text,
+      image:image || "",
+
+      likes:[],
+
+      createdAt:new Date()
+
+    });
+
+
+    await post.save();
+
+
+    res.status(200).json(post);
+
+
+  }catch(error){
+
+    console.log(error);
+
+    res.status(500).json({
+      message:error.message
     });
 
   }
@@ -348,4 +427,190 @@ exports.getUserPosts = async (req, res) => {
       message: error.message,
     });
   }
+};
+
+// Add Reply
+exports.addReply = async (req, res) => {
+  try {
+    const {
+      userId,
+      avatar,
+      text,
+      image,
+    } = req.body;
+
+    const { postId, commentIndex } = req.params;
+
+    if (!userId) {
+      return res.status(400).json({
+        message: "userId is required",
+      });
+    }
+
+    if (!text?.trim() && !image) {
+      return res.status(400).json({
+        message: "Reply cannot be empty",
+      });
+    }
+
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      return res.status(404).json({
+        message: "Post not found",
+      });
+    }
+
+    const comment = post.comments[commentIndex];
+
+    if (!comment) {
+      return res.status(404).json({
+        message: "Comment not found",
+      });
+    }
+
+    comment.replies.push({
+      userId,
+      avatar: avatar || "",
+      text: text || "",
+      image: image || "",
+      likes: [],
+      replies: [],
+    });
+
+    await post.save();
+
+    res.status(200).json(post);
+  } catch (error) {
+    console.log("REPLY ERROR =>", error);
+
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+// Toggle Reply Like
+exports.toggleReplyLike = async (req, res) => {
+  try {
+    const { userId } = req.body;
+
+    const post = await Post.findById(req.params.postId);
+
+    if (!post) {
+      return res.status(404).json({
+        message: "Post not found",
+      });
+    }
+
+    const comment = post.comments[req.params.commentIndex];
+
+    if (!comment) {
+      return res.status(404).json({
+        message: "Comment not found",
+      });
+    }
+
+    const reply = comment.replies[req.params.replyIndex];
+
+    if (!reply) {
+      return res.status(404).json({
+        message: "Reply not found",
+      });
+    }
+
+    if (!reply.likes) {
+      reply.likes = [];
+    }
+
+    const alreadyLiked = reply.likes.some(
+      (id) => id.toString() === userId.toString()
+    );
+
+    if (alreadyLiked) {
+      reply.likes = reply.likes.filter(
+        (id) => id.toString() !== userId.toString()
+      );
+    } else {
+      reply.likes.push(userId);
+    }
+
+    await post.save();
+
+    res.status(200).json(post);
+  } catch (error) {
+    console.log("REPLY LIKE ERROR =>", error);
+
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+// Repost Comment
+exports.repostComment = async(req,res)=>{
+
+ try{
+
+  const {userId}=req.body;
+
+
+  const post = await Post.findById(req.params.postId);
+
+
+  if(!post){
+    return res.status(404).json({
+      message:"Post not found"
+    });
+  }
+
+
+  const comment = post.comments[req.params.commentIndex];
+
+
+  if(!comment){
+    return res.status(404).json({
+      message:"Comment not found"
+    });
+  }
+
+
+  if(!comment.reposts){
+    comment.reposts=[];
+  }
+
+
+  const already =
+  comment.reposts.includes(userId);
+
+
+
+  if(already){
+
+    comment.reposts =
+    comment.reposts.filter(
+      id=>id!==userId
+    );
+
+  }else{
+
+    comment.reposts.push(userId);
+
+  }
+
+
+  await post.save();
+
+
+  res.status(200).json(post);
+
+
+ }catch(error){
+
+  res.status(500).json({
+    message:error.message
+  });
+
+ }
+
 };

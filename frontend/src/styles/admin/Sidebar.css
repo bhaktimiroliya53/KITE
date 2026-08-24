@@ -1,4 +1,4 @@
-.sidebar{
+body:has(.admin-page) .sidebar{
 width:270px;
 height:100vh;
 position:fixed;
@@ -15,7 +15,7 @@ box-shadow:10px 0 40px rgba(0,0,0,.35);
 z-index:1000;
 }
 
-.sidebar-top{
+body:has(.admin-page) .sidebar-top{
 display:flex;
 flex-direction:column;
 align-items:center;
@@ -24,27 +24,25 @@ text-align:center;
 padding:10px 0 20px;
 }
 
-.sidebar-logo{
+body:has(.admin-page) .sidebar-logo{
 width:170px;
 margin:0 auto 4px;
 }
 
-.sidebar-top span{
+body:has(.admin-page) .sidebar-top span{
 margin-top:2px;
 }
 
-.sidebar-logo:hover{
-transform:rotate(-8deg) scale(1.08);
-}
 
-.sidebar-top h2{
+
+body:has(.admin-page) .sidebar-top h2{
 margin:2;
 font-size:20px;
 font-weight:700;
 color:#fff;
 }
 
-.sidebar-top span{
+body:has(.admin-page) .sidebar-top span{
 display:block;
 margin-top:auto;
 color:#8b5cf6;
@@ -104,7 +102,7 @@ background:white;
 border-radius:10px;
 }
 
-.sidebar-bottom{
+body:has(.admin-page) .sidebar-bottom{
 padding-top:20px;
 border-top:1px solid rgba(255,255,255,.08);
 }

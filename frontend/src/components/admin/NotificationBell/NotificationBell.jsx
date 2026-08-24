@@ -9,7 +9,11 @@ function NotificationBell() {
     const [notifications, setNotifications] = useState([]);
 
     const user = JSON.parse(localStorage.getItem("user"));
-    
+
+if (!user?._id) {
+    return null;
+}
+
     useEffect(() => {
 
         fetchNotifications();

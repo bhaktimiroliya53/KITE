@@ -1,0 +1,219 @@
+/* ==========================================
+   CREATE POST PAGE
+========================================== */
+
+.create-post-page {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+  box-sizing: border-box;
+}
+
+/* ==========================================
+   CREATE POST CARD
+========================================== */
+
+.create-post-card {
+  width: 100%;
+  max-width: 900px;
+
+  padding: 28px;
+
+  background: #0f1428;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  border-radius: 20px;
+
+  box-sizing: border-box;
+}
+
+.create-post-card h2 {
+  margin: 0 0 25px;
+
+  color: #ffffff;
+
+  font-size: 24px;
+  font-weight: 700;
+}
+
+/* ==========================================
+   FORM FIELD
+========================================== */
+
+.create-post-field {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 8px;
+
+  margin-bottom: 20px;
+}
+
+.create-post-field label {
+  color: #d7d9e8;
+
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.create-post-field input,
+.create-post-field textarea {
+  width: 100%;
+
+  padding: 14px 16px;
+
+  box-sizing: border-box;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  border-radius: 12px;
+
+  outline: none;
+
+  background: #171d34;
+
+  color: #ffffff;
+
+  font-size: 14px;
+
+  transition: 0.2s ease;
+}
+
+.create-post-field input {
+  height: 48px;
+}
+
+.create-post-field textarea {
+  min-height: 130px;
+
+  resize: vertical;
+
+  font-family: inherit;
+}
+
+.create-post-field input:focus,
+.create-post-field textarea:focus {
+  border-color: #7c3aed;
+
+  box-shadow:
+    0 0 0 3px rgba(124, 58, 237, 0.1);
+}
+
+.create-post-field input::placeholder,
+.create-post-field textarea::placeholder {
+  color: #777d96;
+}
+
+/* ==========================================
+   FILE INPUT
+========================================== */
+
+.create-post-field input[type="file"] {
+  padding: 11px 14px;
+
+  cursor: pointer;
+
+  color: #aeb3c7;
+}
+
+/* ==========================================
+   BUTTONS
+========================================== */
+
+.create-post-buttons {
+  display: flex;
+
+  justify-content: flex-end;
+
+  gap: 12px;
+
+  margin-top: 10px;
+}
+
+.create-post-cancel,
+.create-post-submit {
+  min-width: 110px;
+
+  height: 44px;
+
+  border: none;
+
+  border-radius: 12px;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.25s ease;
+}
+
+/* Cancel */
+
+.create-post-cancel {
+  background: #191f36;
+
+  color: #c2c6d6;
+}
+
+.create-post-cancel:hover {
+  background: #242b47;
+
+  color: #ffffff;
+}
+
+/* Post */
+
+.create-post-submit {
+  background: linear-gradient(
+    135deg,
+    #7c3aed,
+    #9333ea
+  );
+
+  color: #ffffff;
+
+  box-shadow:
+    0 6px 18px rgba(124, 58, 237, 0.22);
+}
+
+.create-post-submit:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 9px 24px rgba(124, 58, 237, 0.35);
+}
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media (max-width: 700px) {
+  .create-post-page {
+    padding: 15px 0;
+  }
+
+  .create-post-card {
+    padding: 20px;
+
+    border-radius: 16px;
+  }
+
+  .create-post-card h2 {
+    font-size: 21px;
+  }
+
+  .create-post-buttons {
+    flex-direction: column;
+  }
+
+  .create-post-cancel,
+  .create-post-submit {
+    width: 100%;
+  }
+}

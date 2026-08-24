@@ -1,4 +1,4 @@
-.topbar{
+body:has(.admin-page) .topbar{
     width:100%;
 
     display:flex;
@@ -207,7 +207,7 @@ flex:1;
 
 @media(max-width:768px){
 
-.topbar-right{
+body:has(.admin-page) .topbar-right{
 
 flex-direction:column;
 

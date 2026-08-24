@@ -8,6 +8,7 @@ exports.sendMessage = async (req, res) => {
       receiverId,
       text = "",
       image = "",
+      gif = "",
     } = req.body;
 
     const message = await Message.create({
@@ -15,6 +16,7 @@ exports.sendMessage = async (req, res) => {
       receiverId,
       text,
       image,
+       gif,
     });
 
     const populatedMessage = await Message.findById(message._id)
@@ -122,4 +124,78 @@ exports.deleteMessage = async (req, res) => {
       message: error.message,
     });
   }
+};
+
+exports.shareComment = async (req, res) => {
+  try {
+    const {
+      senderId,
+      receiverId,
+      comment
+    } = req.body;
+
+
+    const message = await Message.create({
+      senderId,
+      receiverId,
+
+      text: "Shared a comment",
+
+      sharedComment: {
+        username: comment.username,
+        avatar: comment.avatar,
+        text: comment.text,
+      },
+    });
+
+
+    res.status(201).json(message);
+
+  } catch (error) {
+
+    console.log("SHARE COMMENT ERROR =>", error);
+
+    res.status(500).json({
+      message:"Server error"
+    });
+
+  }
+};
+
+exports.updateMessage = async (req, res) => {
+
+  try {
+
+    const updatedMessage = await Message.findByIdAndUpdate(
+      req.params.messageId,
+      {
+        text: req.body.text,
+        edited: true,
+      },
+      {
+        new: true,
+      }
+    );
+
+
+    if (!updatedMessage) {
+      return res.status(404).json({
+        message: "Message not found",
+      });
+    }
+
+
+    res.json(updatedMessage);
+
+
+  } catch (error) {
+
+    console.log("UPDATE MESSAGE ERROR =>", error);
+
+    res.status(500).json({
+      message: error.message,
+    });
+
+  }
+
 };

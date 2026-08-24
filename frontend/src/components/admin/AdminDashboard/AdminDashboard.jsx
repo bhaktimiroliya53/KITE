@@ -54,6 +54,11 @@ function AdminDashboard() {
 
     const user = JSON.parse(localStorage.getItem("user"));
 
+if (!user?._id) {
+    window.location.href = "/";
+    return null;
+}
+
     useEffect(() => {
         fetchDashboard();
         fetchUsers();

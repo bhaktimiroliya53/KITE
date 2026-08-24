@@ -1,0 +1,482 @@
+/* =========================
+   MODERN EMOJI BUTTON
+========================= */
+
+.emoji-btn {
+
+  width:40px;
+  height:40px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  background:transparent;
+
+  border:none;
+
+  color:#9ca3af;
+
+  font-size:26px;
+
+  cursor:pointer;
+
+  border-radius:50%;
+
+  transition:0.25s ease;
+
+}
+
+
+.emoji-btn:hover {
+
+  background:#252a40;
+
+  color:white;
+
+}
+
+
+.emoji-btn:active {
+
+  transform:scale(0.9);
+
+}
+
+/* =========================
+   EMOJI + GIF TABS
+========================= */
+
+.picker-tabs button {
+
+  flex:1;
+
+  height:55px;
+
+  background:transparent;
+
+  border:none;
+
+  color:#9ca3af;
+
+  font-size:16px;
+
+  font-weight:600;
+
+  position:relative;
+
+  cursor:pointer;
+
+}
+
+
+.picker-tabs button.active {
+
+  color:white;
+
+}
+
+
+.picker-tabs button.active::after {
+
+  content:"";
+
+  position:absolute;
+
+  bottom:0;
+
+  left:25%;
+
+  width:50%;
+
+  height:3px;
+
+  border-radius:10px;
+
+  background:#8b5cf6;
+
+  box-shadow:0 0 15px #8b5cf6;
+
+}
+
+
+.picker-tabs button:hover {
+
+  color:white;
+
+}
+
+/* FIX TAB ALIGNMENT */
+
+.picker-tabs {
+  display:flex;
+  align-items:center;
+  height:55px;
+  background:#111522;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+
+.picker-tabs button {
+
+  flex:1;
+
+  height:55px;
+
+  background:transparent;
+
+  border:none;
+
+  color:#9ca3af;
+
+  font-size:16px;
+
+  font-weight:600;
+
+  position:relative;
+
+  cursor:pointer;
+
+}
+
+
+.picker-tabs button.active {
+
+  color:white;
+
+}
+
+
+.picker-tabs button.active::after {
+
+  content:"";
+
+  position:absolute;
+
+  bottom:0;
+
+  left:20%;
+
+  width:60%;
+
+  height:3px;
+
+  border-radius:10px;
+
+  background:#8b5cf6;
+
+  box-shadow:0 0 15px #8b5cf6;
+
+}
+
+/* =========================
+   GIF AREA CARD
+========================= */
+
+.gif-area {
+
+  padding:15px;
+
+  background:#151827;
+
+  height:360px;
+
+}
+
+
+/* GIF SEARCH */
+
+.gif-search input {
+
+  width:100%;
+
+  height:42px;
+
+  padding:0 15px;
+
+  border:none;
+
+  outline:none;
+
+  border-radius:14px;
+
+  background:#252a40;
+
+  color:white;
+
+  font-size:14px;
+
+}
+
+
+.gif-search input::placeholder {
+
+  color:#9ca3af;
+
+}
+
+
+
+/* EMPTY GIF SCREEN */
+
+.gif-empty {
+
+  height:260px;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  color:#9ca3af;
+
+  font-size:18px;
+
+  font-weight:600;
+
+  text-align:center;
+
+}
+
+/* =========================
+   GIF GRID
+========================= */
+
+.gif-area{
+  padding:15px;
+  width:320px;
+}
+
+
+.gif-grid{
+
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+
+}
+
+
+.gif-card{
+
+  width:140px;
+  height:120px;
+
+  border-radius:16px;
+
+  overflow:hidden;
+
+  cursor:pointer;
+
+  background:#1f2438;
+
+  transition:.25s ease;
+
+}
+
+
+.gif-card img{
+
+  width:100%;
+  height:100%;
+
+  object-fit:cover;
+
+  display:block;
+
+}
+
+
+
+.gif-card:hover{
+
+  transform:scale(1.05);
+
+  box-shadow:
+  0 10px 25px rgba(139,92,246,.35);
+
+}
+
+.chat-gif {
+
+  width:220px;
+
+  max-height:250px;
+
+  object-fit:cover;
+
+  border-radius:16px;
+
+  display:block;
+
+}
+
+/* =========================
+   GIF MESSAGE STYLE
+========================= */
+
+.chat-gif {
+
+  width: 260px;
+  max-width: 100%;
+
+  height: 180px;
+
+  object-fit: cover;
+
+  border-radius: 18px;
+
+  display: block;
+
+  cursor: pointer;
+
+  transition: 0.25s ease;
+
+}
+
+
+/* hover effect */
+
+.chat-gif:hover {
+
+  transform: scale(1.03);
+
+}
+
+
+/* GIF inside message bubble */
+
+.message-bubble:has(.chat-gif) {
+
+  padding: 8px;
+
+  overflow: hidden;
+
+}
+
+
+/* remove extra spacing */
+
+.message-bubble:has(.chat-gif) .message-meta {
+
+  padding: 5px 8px 2px;
+
+}
+
+
+/* sender GIF bubble */
+
+.message-bubble.mine:has(.chat-gif) {
+
+  background: #8b5cf6;
+
+}
+
+
+/* receiver GIF bubble */
+
+.message-bubble:not(.mine):has(.chat-gif) {
+
+  background: #1f2438;
+
+}
+
+/* + button css */
+
+.image-btn {
+
+  width:46px;
+  height:46px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  cursor:pointer;
+
+  font-size:28px;
+
+  color:#aab0c5;
+
+  border-radius:50%;
+
+  transition:0.25s ease;
+
+  margin:0 5px;
+
+}
+
+
+.image-btn:hover {
+
+  background:#252a40;
+
+  color:white;
+
+  transform:scale(1.1);
+
+}
+
+
+.image-btn:active {
+
+  transform:scale(0.9);
+
+}
+
+
+/* =========================
+   SEND BUTTON
+========================= */
+
+.send-btn {
+
+  width:52px;
+  height:52px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border:none;
+
+  border-radius:50%;
+
+  background:linear-gradient(
+    135deg,
+    #a855f7,
+    #7c3aed
+  );
+
+  color:white;
+
+  font-size:24px;
+
+  cursor:pointer;
+
+  margin-left:10px;
+
+  box-shadow:
+    0 8px 25px rgba(139,92,246,0.45);
+
+  transition:0.25s ease;
+
+}
+
+
+.send-btn:hover {
+
+  transform:scale(1.08);
+
+  box-shadow:
+    0 12px 35px rgba(139,92,246,0.65);
+
+}
+
+
+.send-btn:active {
+
+  transform:scale(0.92);
+
+}

@@ -3,9 +3,12 @@ import { Link, useNavigate } from "react-router-dom";
 import API from "../../services/api";
 import "../../styles/user/auth.css";
 import kiteBrandLogo from "../../assets/logo/kite-brand-logo.png";
+import { useLoader } from "../../context/LoaderContext";
 
 function Login() {
   const navigate = useNavigate();
+
+  const { showLoader, hideLoader } = useLoader();
 
   const [formData, setFormData] = useState({
     identifier: "",
@@ -22,14 +25,21 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    showLoader();
+
     try {
       const res = await API.post("/auth/login", formData);
 
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
 
-      navigate("/home");
+      setTimeout(() => {
+        hideLoader();
+        navigate("/home");
+      }, 1200);
+
     } catch (error) {
+      hideLoader();
       alert(error.response?.data?.message || "Login Failed");
     }
   };

@@ -35,6 +35,7 @@ const postSchema = new mongoose.Schema(
       },
     ],
 
+
     comments: [
       {
         userId: String,
@@ -48,12 +49,41 @@ const postSchema = new mongoose.Schema(
           },
         ],
 
+        reposts: [
+          {
+            type: String,
+          }
+        ],
+
+
+        replies: [
+          {
+            userId: String,
+            avatar: String,
+            text: String,
+            image: String,
+
+            likes: [
+              {
+                type: String,
+              },
+            ],
+
+            createdAt: {
+              type: Date,
+              default: Date.now,
+            },
+          },
+        ],
+
+
         createdAt: {
           type: Date,
           default: Date.now,
         },
       },
     ],
+
 
     reposts: [
       {
@@ -62,15 +92,19 @@ const postSchema = new mongoose.Schema(
       },
     ],
 
+
     savedBy: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
       },
     ],
-
   },
-  { timestamps: true }
+
+  {
+    timestamps: true
+  }
 );
+
 
 module.exports = mongoose.model("Post", postSchema);

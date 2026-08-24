@@ -1,4 +1,4 @@
-* {
+/* * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -14,25 +14,21 @@ a {
   text-decoration: none;
   color: #c084fc;
   margin-left: 5px;
-}
+} */
 
-.auth-container {
+/* .auth-container {
   height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
 
   background:
-    radial-gradient(
-      circle at top left,
+    radial-gradient(circle at top left,
       rgba(168, 85, 247, 0.4),
-      transparent 30%
-    ),
-    radial-gradient(
-      circle at bottom right,
+      transparent 30%),
+    radial-gradient(circle at bottom right,
       rgba(236, 72, 153, 0.4),
-      transparent 30%
-    ),
+      transparent 30%),
     #0a0a14;
 }
 
@@ -149,10 +145,10 @@ a {
   width: 100%;
   padding: 30px;
   gap: 30px;
-}
+} */
 
 /* Sidebar */
-.sidebar {
+/* .sidebar {
   width: 20%;
   background: rgba(255, 255, 255, 0.05);
   padding: 25px;
@@ -169,19 +165,22 @@ a {
   color: white;
   cursor: pointer;
   text-align: left;
-}
+} */
 
 /* feed */
-.feed {
-  width: 55%;
-}
+/* .feed {
+  width: 100%;
+} */
 
-/* post */
+/* post
 .create-post {
+  width:100%;
+max-width:900px;
+margin-bottom:24px;
   background: rgba(255, 255, 255, 0.05);
   padding: 20px;
   border-radius: 20px;
-  margin-bottom: 20px;
+
 }
 
 .create-post input {
@@ -199,13 +198,16 @@ a {
   background: linear-gradient(45deg, #9333ea, #ec4899);
   color: white;
   cursor: pointer;
-}
-
+} */
+/* 
 .post-card {
+  width: 154%;
+  max-width: 1000px;
+  margin-bottom: 24px;
   background: rgba(255, 255, 255, 0.05);
   padding: 20px;
   border-radius: 20px;
-  margin-bottom: 20px;
+
 }
 
 .post-top {
@@ -226,9 +228,16 @@ a {
 
 .post-image {
   width: 100%;
-  border-radius: 15px;
-  height: 350px;
+
+  max-height: 520px;
+
   object-fit: cover;
+
+  border-radius: 18px;
+
+  display: block;
+
+  margin-top: 12px;
 }
 
 .post-actions {
@@ -247,6 +256,10 @@ a {
 
 .image-wrapper {
   position: relative;
+
+  overflow: hidden;
+
+  border-radius: 18px;
 }
 
 .heart-animation {
@@ -278,28 +291,47 @@ a {
 
 .action-item {
   display: flex;
+
   align-items: center;
-  gap: 6px;
+
+  gap: 8px;
 }
 
 .action-btn {
-  background: transparent;
+  width: 42px;
+  height: 42px;
+
   border: none;
-  color: white;
-  font-size: 22px;
+
+  border-radius: 12px;
+
+  background: transparent;
+
+  color: #cbd5e1;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   cursor: pointer;
-  padding: 0;
+
+  transition: .25s;
 }
 
 .action-btn:hover {
-  transform: scale(1.08);
+  background: #1b2436;
+
+  color: #fff;
+
+  transform: translateY(-2px);
 }
 
 .action-count {
+  color: #9ca3af;
+
   font-size: 14px;
-  color: #bdbdbd;
+
   cursor: pointer;
-  margin-top: 0;
 }
 
 .repost-active {
@@ -311,25 +343,13 @@ a {
     transform: rotate(0deg) scale(1);
   }
 
-  /* 
-    50% {
-      transform: rotate(180deg) scale(1.25);
-    } */
 
   100% {
     transform: rotate(360deg) scale(1);
   }
-}
-
-/* RIGHTBAR */
-/* .rightbar {
-  background: rgba(255, 255, 255, 0.05);
-  padding: 25px;
-  border-radius: 20px;
-  height: fit-content;
 } */
 
-.rightbar p {
+/* .rightbar p {
   margin-top: 15px;
 }
 
@@ -341,13 +361,13 @@ a {
   padding: 0 20px;
   max-width: 1600px;
   margin: auto;
-}
+} */
 
-.main-content {
+/* .main-content {
   flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
+ 
   min-width: 0;
   padding: 20px;
 }
@@ -365,18 +385,18 @@ a {
   padding: 0 25px;
   margin-bottom: 25px;
   backdrop-filter: blur(20px);
-}
+} */
 
 /* LEFT */
-
+/* 
 .menu-icon {
   font-size: 28px;
   cursor: pointer;
-}
+} */
 
 /* CENTER */
 
-.center-logo {
+/* .center-logo {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -389,11 +409,11 @@ a {
 .center-logo h2 {
   letter-spacing: 4px;
   font-size: 28px;
-}
+} */
 
 /* RIGHT */
 
-.top-icons {
+/* .top-icons {
   display: flex;
   align-items: center;
   gap: 18px;
@@ -409,16 +429,16 @@ a {
   height: 42px;
   border-radius: 50%;
   object-fit: cover;
-}
+} */
 
 /* SIDEBAR */
-
+/* 
 .sidebar {
   width: 220px;
   min-width: 220px;
   flex-shrink: 0;
   padding: 24px;
-  border-right: 1px solid rgba(255,255,255,.08);
+  border-right: 1px solid rgba(255, 255, 255, .08);
   position: sticky;
   top: 0;
   height: 100vh;
@@ -431,10 +451,6 @@ a {
   margin-bottom: 20px;
 }
 
-.sidebar-logo img {
-  width: 250px;
-  margin-left: -50px;
-}
 
 .sidebar-logo h2 {
   font-size: 32px;
@@ -466,11 +482,11 @@ a {
 
 .menu button:hover {
   background: rgba(168, 85, 247, 0.15);
-}
+} */
 
 /* FEED */
 
-.feed {
+/* .feed {
   flex: 1;
   width: 100%;
   max-width: 580px;
@@ -478,7 +494,10 @@ a {
 }
 
 .create-post {
+  width: 154%;
+  max-width: 900px;
   display: flex;
+  justify-content: space-between;
   background: rgba(255, 255, 255, 0.05);
   padding: 25px;
   border-radius: 24px;
@@ -546,17 +565,22 @@ a {
   100% {
     transform: translateX(350%);
   }
-}
+} */
 
 /* POST */
 
-.post-actions button {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: 18px;
-  color: #fff;
-  transition: 0.2s;
+/* .post-actions {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  margin-top: 18px;
+
+  padding-top: 14px;
+
+  border-top: 1px solid rgba(255, 255, 255, .06);
 }
 
 .post-actions button:hover {
@@ -604,18 +628,9 @@ a {
 
 .delete-sheet-btn:hover {
   background: rgba(255, 77, 77, 0.08);
-}
+} */
 
-.post-card {
-  width: 100%;
-  box-sizing: border-box;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 25px;
-  border-radius: 24px;
-}
-
-.post-top {
+/* .post-top {
   display: flex;
   align-items: center;
   gap: 15px;
@@ -633,22 +648,17 @@ a {
 }
 
 .post-card p {
-  margin-bottom: 20px;
-  line-height: 1.6;
-  font-size: 17px;
-}
+  margin: 16px 0;
 
-.post-card {
-  max-width: 650px;
+  color: #e5e7eb;
 
-  margin: 20px auto;
+  font-size: 15px;
 
-  padding: 20px;
+  line-height: 1.7;
+} */
 
-  border-radius: 20px;
-}
 
-.post-actions {
+/* .post-actions {
   display: flex;
   gap: 15px;
 }
@@ -713,11 +723,11 @@ a {
   cursor: pointer;
   color: white;
   background: linear-gradient(45deg, #7c3aed, #ec4899);
-}
+} */
 
 /* MODAL */
 
-.modal-overlay {
+/* .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -974,11 +984,11 @@ a {
   bottom: 60px;
   left: 15px;
   z-index: 10000;
-}
+} */
 
 /* RIGHTBAR */
 
-.rightbar {
+/* .rightbar {
   width: 250px;
   min-width: 250px;
   flex-shrink: 0;
@@ -1002,10 +1012,10 @@ a {
 
 .trend:hover {
   background: rgba(168, 85, 247, 0.15);
-}
+} */
 
 /* profile */
-.profile-page {
+/* .profile-page {
   min-height: 100vh;
   background: #05081c;
   color: white;
@@ -1331,10 +1341,10 @@ a {
   color: white;
 
   text-align: center;
-}
+} */
 
 /* Search Page */
-.search-page {
+/* .search-page {
   min-height: 100vh;
   background: #05081c;
   color: white;
@@ -1515,19 +1525,19 @@ a {
 .likes-close-btn:hover {
   background: rgba(255, 255, 255, 0.15);
   transform: scale(1.05);
-}
+} */
 
 /* Messages Page */
-
+/* 
 .messages-page {
   height: 100vh;
   background: #0b1020;
   color: white;
-}
+} */
 
 /* LEFT USERS PANEL */
 
-.users-list {
+/* .users-list {
   width: 320px;
   min-width: 320px;
   height: 100vh;
@@ -1585,10 +1595,10 @@ a {
 
 .back-btn:hover {
   color: #8b5cf6;
-}
+} */
 
 /* CHAT */
-.chat-container {
+/* .chat-container {
   display: flex;
   width: 100vw;
   height: 100vh;
@@ -1842,21 +1852,21 @@ a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-}
+} */
 
 /* Typing Indicator */
 
-.typing-text {
+/* .typing-text {
   display: block;
   color: #9ca3af;
   font-size: 12px;
   margin-left: 8px;
   margin-bottom: 4px;
-}
+} */
 
 /* delete message modal */
 
-.delete-overlay {
+/* .delete-overlay {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.65);
@@ -1906,11 +1916,11 @@ a {
 .delete-btn {
   background: #ef4444;
   color: white;
-}
+} */
 
 /* image preview for chat */
 
-.image-btn {
+/* .image-btn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1962,10 +1972,10 @@ a {
 .message-bubble p {
   margin: 0;
 }
-
+ */
 /* Theme */
 
-body[data-theme="dark"] {
+/* body[data-theme="dark"] {
   background: #050826;
   color: white;
 }
@@ -1973,10 +1983,10 @@ body[data-theme="dark"] {
 body[data-theme="light"] {
   background: #f5f5f5;
   color: #111;
-}
+} */
 
 /* rightbar in homepage */
-.view-more-btn {
+/* .view-more-btn {
   width: 100%;
   margin-top: 18px;
   padding: 12px;
@@ -1993,12 +2003,12 @@ body[data-theme="light"] {
 .view-more-btn:hover {
   transform: translateY(-2px);
   opacity: 0.95;
-}
+} */
 
 /* media queries */
 
 /* Mobile */
-@media (max-width: 768px) {
+/* @media (max-width: 768px) {
   .sidebar {
     display: none;
   }
@@ -2021,10 +2031,10 @@ body[data-theme="light"] {
   .post-image {
     height: auto;
   }
-}
+} */
 
 /* Tablet */
-@media (max-width: 1024px) {
+/* @media (max-width: 1024px) {
   .rightbar {
     display: none;
   }
@@ -2036,10 +2046,10 @@ body[data-theme="light"] {
   .sidebar {
     width: 220px;
   }
-}
+} */
 
 /* Chat */
-@media (max-width: 768px) {
+/* @media (max-width: 768px) {
   .chat-header {
     padding: 12px;
   }
@@ -2055,10 +2065,10 @@ body[data-theme="light"] {
   .message-bubble {
     max-width: 80%;
   }
-}
+} */
 
 /* Profile */
-@media (max-width: 768px) {
+/* @media (max-width: 768px) {
   .profile-header {
     flex-direction: column;
     text-align: center;
@@ -2071,10 +2081,10 @@ body[data-theme="light"] {
   .posts-grid {
     grid-template-columns: 1fr;
   }
-}
+} */
 
 /* Edit Profile */
-@media (max-width: 768px) {
+/* @media (max-width: 768px) {
   .edit-container {
     flex-direction: column;
   }
@@ -2091,9 +2101,9 @@ body[data-theme="light"] {
     flex-direction: column;
     text-align: center;
   }
-}
+} */
 
-@media (max-width: 1024px) {
+/* @media (max-width: 1024px) {
   .rightbar {
     display: none;
   }
@@ -2106,4 +2116,35 @@ body[data-theme="light"] {
     max-width: 100%;
     padding: 20px;
   }
+} */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html,
+body,
+#root{
+    width:100%;
+    height:100%;
+}
+
+body{
+    font-family:Inter,sans-serif;
+    background:#080b1d;
+    color:#fff;
+    overflow-x:hidden;
+}
+
+a{
+    text-decoration:none;
+    color:inherit;
+}
+
+button,
+input,
+textarea{
+    font-family:inherit;
 }

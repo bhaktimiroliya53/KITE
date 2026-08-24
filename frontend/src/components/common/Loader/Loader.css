@@ -1,0 +1,36 @@
+.loader-screen {
+  position: fixed;
+  inset: 0;
+  background: #0d1117;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
+}
+
+.loader-logo {
+  width: 90px;
+  height: 90px;
+  opacity: 0;
+  animation: logoFade 1.4s ease forwards;
+}
+
+@keyframes logoFade {
+  0% {
+    opacity: 0;
+    transform: scale(0.92);
+    filter: drop-shadow(0 0 0 rgba(124, 58, 237, 0));
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1);
+    filter: drop-shadow(0 0 16px rgba(124, 58, 237, 0.55));
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: drop-shadow(0 0 8px rgba(124, 58, 237, 0.25));
+  }
+}

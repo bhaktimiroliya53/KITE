@@ -24,6 +24,17 @@ const messageSchema = new mongoose.Schema(
       default: "",
     },
 
+    gif: {
+      type: String,
+      default: "",
+    },
+
+    sharedComment: {
+      username: String,
+      avatar: String,
+      text: String
+    },
+
     reactions: [
       {
         userId: {

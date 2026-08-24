@@ -1,194 +1,405 @@
 /* ==========================================================
-   HOME PAGE LAYOUT
+   HOME FEED LAYOUT
 ========================================================== */
-
-.home-page {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 20px;
-  padding: 0 20px;
-  max-width: 1600px;
-  margin: auto;
-}
-
-.main-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 0;
-  padding: 20px;
-}
 
 .layout {
-  display: flex;
-  width: 100%;
-  padding: 30px;
-  gap: 30px;
+
+  width:100%;
+
+  display:flex;
+
+  gap:30px;
+
 }
+
+
 
 /* ==========================================================
-   USER SIDEBAR (Currently inside Home.jsx)
+   MAIN FEED AREA
 ========================================================== */
 
-.sidebar {
-  width: 220px;
-  min-width: 220px;
-  flex-shrink: 0;
-  padding: 24px;
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
-  position: sticky;
-  top: 0;
-  height: 100vh;
+.feed {
+
+  width:100%;
+
+  max-width:900px;
+
+  display:flex;
+
+  flex-direction:column;
+
+  gap:20px;
+
 }
 
-.sidebar-logo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 20px;
+
+
+/* ==========================================================
+   CREATE POST CARD
+========================================================== */
+
+
+.create-post {
+
+  width:100%;
+
+  height:82px;
+
+  display:flex;
+
+  align-items:center;
+
+  gap:14px;
+
+  padding:14px 18px;
+
+  background:#10152b;
+
+  border:1px solid rgba(255,255,255,0.08);
+
+  border-radius:20px;
+
+  box-sizing:border-box;
+
+  cursor:pointer;
+
+  transition:0.3s ease;
+
 }
 
-.sidebar-logo img {
-  width: 250px;
-  margin-left: -50px;
+
+.create-post:hover {
+
+  border-color:rgba(168,85,247,0.4);
+
+  box-shadow:
+  0 10px 30px rgba(0,0,0,0.25);
+
 }
 
-.sidebar-logo h2 {
-  font-size: 32px;
-  letter-spacing: 4px;
+
+
+.create-post-avatar {
+
+  width:45px;
+
+  height:45px;
+
+  border-radius:50%;
+
+  object-fit:cover;
+
+  border:2px solid #8b5cf6;
+
 }
 
-.menu {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
+
+
+.create-post-input {
+
+  flex:1;
+
+  height:45px;
+
+  display:flex;
+
+  align-items:center;
+
+  padding:0 16px;
+
+  background:rgba(255,255,255,0.05);
+
+  border-radius:14px;
+
+  color:#9ca3af;
+
+  font-size:14px;
+
 }
 
-.menu button {
-  padding: 16px;
-  border: none;
-  border-radius: 14px;
-  background: transparent;
+
+
+.create-post-btn {
+
+  height:42px;
+
+  padding:0 22px;
+
+  border:none;
+
+  border-radius:14px;
+
+  background:linear-gradient(
+    135deg,
+    #7c3aed,
+    #ec4899
+  );
+
+  color:white;
+
+  font-weight:600;
+
+  cursor:pointer;
+
+  transition:0.25s;
+
+}
+
+
+.create-post-btn:hover {
+
+  transform:translateY(-2px);
+
+}
+
+
+
+/* ==========================================================
+   RIGHT BAR
+========================================================== */
+
+
+.rightbar {
+
+  width:320px;
+
+  flex-shrink:0;
+
+}
+
+
+
+/* ==========================================================
+   RESPONSIVE
+========================================================== */
+
+
+@media(max-width:1150px){
+
+
+  .rightbar {
+
+    display:none;
+
+  }
+
+
+}
+
+
+@media(max-width:700px){
+
+
+  .create-post {
+
+    height:auto;
+
+    padding:12px;
+
+  }
+
+
+  .create-post-btn {
+
+    padding:0 15px;
+
+  }
+
+
+}
+
+/* ==========================================
+   COMMENT MODAL FIX
+========================================== */
+
+.modal-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  background: rgba(0, 0, 0, 0.72) !important;
+  backdrop-filter: blur(8px);
+
+  z-index: 99999 !important;
+}
+
+.comment-modal {
+  width: 520px;
+  max-width: calc(100vw - 40px);
+  max-height: 80vh;
+
+  background: #10152b;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 22px;
+
+  padding: 20px;
+
+  box-sizing: border-box;
+
+  overflow: hidden;
+
   color: white;
-  font-size: 18px;
-  text-align: left;
-  cursor: pointer;
-  transition: 0.3s;
+
+  box-shadow:
+    0 25px 80px rgba(0, 0, 0, 0.55);
+
+  position: relative;
+  z-index: 100000;
 }
 
-.menu button:hover {
-  background: rgba(168, 85, 247, 0.15);
-}
-
-.logout-btn {
-  margin-top: auto;
-  margin-bottom: 20px;
-}
-
-/* ==========================================================
-   TOPBAR (Currently inside Home.jsx)
-========================================================== */
-
-.topbar {
-  width: 100%;
-  max-width: 620px;
-  height: 80px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 24px;
+.comment-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 25px;
-  margin-bottom: 25px;
-  backdrop-filter: blur(20px);
+
+  padding-bottom: 15px;
+  margin-bottom: 10px;
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.menu-icon {
-  font-size: 28px;
+.comment-header h3 {
+  margin: 0;
+  color: white;
+  font-size: 20px;
+}
+
+.close-comment,
+.likes-close-btn {
+  width: 34px;
+  height: 34px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.08);
+  color: white;
+
   cursor: pointer;
+  font-size: 16px;
+
+  transition: 0.2s ease;
 }
 
-.center-logo {
+.close-comment:hover,
+.likes-close-btn:hover {
+  background: #7c3aed;
+  transform: rotate(90deg);
+}
+
+.comments-list {
+  max-height: 55vh;
+  overflow-y: auto;
+  padding: 5px 3px;
+}
+
+.comment-item {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  gap: 12px;
+
+  padding: 14px 5px;
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-.center-logo img {
-  width: 200px;
-}
+.comment-avatar {
+  width: 40px;
+  height: 40px;
 
-.center-logo h2 {
-  letter-spacing: 4px;
-  font-size: 28px;
-}
+  flex-shrink: 0;
 
-.top-icons {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-}
-
-.top-icons span {
-  font-size: 22px;
-  cursor: pointer;
-}
-
-.top-icons img {
-  width: 42px;
-  height: 42px;
   border-radius: 50%;
   object-fit: cover;
+
+  border: 2px solid #8b5cf6;
 }
 
-/* ==========================================================
-   RIGHT SIDEBAR
-========================================================== */
-
-.rightbar {
-  width: 250px;
-  min-width: 250px;
-  flex-shrink: 0;
-  padding: 30px;
-  border-left: 1px solid rgba(255, 255, 255, 0.08);
+.comment-content {
+  color: white;
 }
 
-.rightbar h3 {
-  margin-bottom: 25px;
-  font-size: 24px;
+.comment-content h5 {
+  margin: 0 0 4px;
+
+  font-size: 14px;
+  color: white;
 }
 
-.trend {
-  background: rgba(255, 255, 255, 0.05);
-  padding: 18px;
-  border-radius: 16px;
-  margin-bottom: 15px;
-  cursor: pointer;
-  transition: 0.3s;
+.comment-content p {
+  margin: 0;
+
+  color: #c7cad8;
+  font-size: 14px;
 }
 
-.trend:hover {
-  background: rgba(168, 85, 247, 0.15);
-}
+.comment-like-btn {
+  margin-top: 7px;
 
-.view-more-btn {
-  width: 100%;
-  margin-top: 18px;
-  padding: 12px;
+  background: transparent;
   border: none;
-  border-radius: 12px;
-  background: linear-gradient(45deg, #7c3aed, #ec4899);
-  color: #fff;
-  font-size: 15px;
+
+  color: #aaa;
+  cursor: pointer;
+
+  font-size: 12px;
+}
+
+.comment-input-box {
+  display: flex;
+  gap: 10px;
+
+  margin-top: 15px;
+  padding-top: 15px;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.comment-input-box input {
+  flex: 1;
+
+  min-width: 0;
+
+  padding: 13px 15px;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+
+  outline: none;
+
+  background: #191f38;
+  color: white;
+}
+
+.comment-input-box input::placeholder {
+  color: #858ba3;
+}
+
+.comment-input-box button {
+  padding: 0 20px;
+
+  border: none;
+  border-radius: 14px;
+
+  background: linear-gradient(
+    135deg,
+    #7c3aed,
+    #ec4899
+  );
+
+  color: white;
+
   font-weight: 600;
   cursor: pointer;
-  transition: 0.3s;
+
+  transition: 0.2s ease;
 }
 
-.view-more-btn:hover {
-  transform: translateY(-2px);
-  opacity: 0.95;
+.comment-input-box button:hover {
+  transform: translateY(-1px);
+  opacity: 0.9;
 }
