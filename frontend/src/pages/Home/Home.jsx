@@ -13,6 +13,7 @@ import "../../styles/user/home.css";
 import "../../styles/user/feed.css";
 import "../../styles/user/postcard.css";
 import { FiRepeat } from "react-icons/fi";
+import "../../styles/user/createpost.css";
 
 function Home() {
   const user = JSON.parse(localStorage.getItem("user") || "{}");
