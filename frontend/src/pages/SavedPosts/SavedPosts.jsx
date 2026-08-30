@@ -15,16 +15,25 @@ function SavedPosts() {
   }, []);
 
   const fetchSavedPosts = async () => {
-    try {
-      const res = await API.get("/posts");
+  try {
+    const res = await API.get("/posts", {
+      params: {
+        userId: user._id,
+      },
+    });
 
-      const saved = res.data.filter((post) => post.savedBy?.includes(user._id));
+    const saved = res.data.filter((post) =>
+      post.savedBy?.some(
+        (savedUserId) =>
+          savedUserId.toString() === user._id.toString()
+      )
+    );
 
-      setSavedPosts(saved);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+    setSavedPosts(saved);
+  } catch (error) {
+    console.log(error);
+  }
+};
 
   return (
     <div className="profile-page">

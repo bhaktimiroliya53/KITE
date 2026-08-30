@@ -1,47 +1,134 @@
-.notification-panel{
-background:rgba(255,255,255,.05);
-backdrop-filter:blur(20px);
-border:1px solid rgba(255,255,255,.08);
-border-radius:20px;
-padding:20px;
-margin-top:30px;
+/* =========================================================
+   KITE ADMIN — NOTIFICATION PANEL
+   ========================================================= */
+
+.notification-panel {
+  width: 100%;
+  min-width: 0;
+
+  padding: 20px;
+
+  background: #101522;
+
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 16px;
+
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.16);
+
+  overflow: hidden;
 }
 
-.notification-panel h3{
-color:white;
-margin-bottom:20px;
-font-size:22px;
+
+/* =========================================================
+   TITLE
+   ========================================================= */
+
+.notification-panel h3 {
+  margin: 0 0 16px;
+
+  color: #ffffff;
+
+  font-size: 18px;
+  font-weight: 700;
 }
 
-.notification-card{
-padding:15px;
-margin-bottom:12px;
-background:rgba(255,255,255,.05);
-border-radius:12px;
-border-left:4px solid #8b5cf6;
-transition:.3s;
+
+/* =========================================================
+   NOTIFICATION CARD
+   ========================================================= */
+
+.notification-card {
+  width: 100%;
+  min-width: 0;
+
+  padding: 13px 14px;
+  margin-bottom: 10px;
+
+  background: #151b2a;
+
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-left: 3px solid #8b5cf6;
+
+  border-radius: 10px;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease,
+    border-color 0.2s ease;
 }
 
-.notification-card:hover{
-transform:translateX(6px);
-background:rgba(139,92,246,.15);
+.notification-card:last-child {
+  margin-bottom: 0;
 }
 
-.notification-card p{
-margin:0;
-color:white;
-font-size:15px;
+.notification-card:hover {
+  background: #1a2030;
+
+  transform: translateX(2px);
+
+  border-color:
+    rgba(139, 92, 246, 0.25);
 }
 
-.notification-card span{
-display:block;
-margin-top:8px;
-font-size:12px;
-color:#9ca3af;
+
+/* =========================================================
+   CONTENT
+   ========================================================= */
+
+.notification-card p {
+  margin: 0;
+
+  color: #ffffff;
+
+  font-size: 13px;
+  font-weight: 500;
+
+  line-height: 1.5;
 }
 
-.no-notification{
-color:#9ca3af;
-text-align:center;
-padding:20px 0;
+.notification-card span {
+  display: block;
+
+  margin-top: 5px;
+
+  color: #64748b;
+
+  font-size: 11px;
+
+  line-height: 1.4;
+}
+
+
+/* =========================================================
+   EMPTY STATE
+   ========================================================= */
+
+.no-notification {
+  padding: 24px 0;
+
+  color: #64748b;
+
+  font-size: 13px;
+
+  text-align: center;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 650px) {
+  .notification-panel {
+    padding: 16px;
+  }
+
+  .notification-panel h3 {
+    font-size: 16px;
+  }
+
+  .notification-card {
+    padding: 12px;
+  }
 }

@@ -1,42 +1,154 @@
-.latest-users-card{
-background:rgba(255,255,255,.05);
-border:1px solid rgba(255,255,255,.08);
-backdrop-filter:blur(20px);
-border-radius:20px;
-padding:25px;
-margin-bottom:40px;
+/* =========================================================
+   KITE ADMIN — LATEST USERS
+   ========================================================= */
+
+.latest-users-card {
+  width: 100%;
+  min-width: 0;
+
+  padding: 20px;
+
+  background: #101522;
+
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 16px;
+
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.16);
+
+  overflow: hidden;
 }
 
-.latest-users-card h2{
-color:white;
-margin-bottom:20px;
+
+/* =========================================================
+   TITLE
+   ========================================================= */
+
+.latest-users-card h2 {
+  margin: 0 0 16px;
+
+  color: #ffffff;
+
+  font-size: 18px;
+  font-weight: 700;
 }
 
-.latest-user{
-display:flex;
-align-items:center;
-gap:15px;
-padding:12px 0;
-border-bottom:1px solid rgba(255,255,255,.05);
+
+/* =========================================================
+   USER ROW
+   ========================================================= */
+
+.latest-user {
+  width: 100%;
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 12px 0;
+
+  border-bottom:
+    1px solid rgba(255, 255, 255, 0.06);
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
 }
 
-.latest-user:last-child{
-border-bottom:none;
+.latest-user:last-child {
+  border-bottom: none;
 }
 
-.latest-user img{
-width:50px;
-height:50px;
-border-radius:50%;
-object-fit:cover;
+
+/* =========================================================
+   USER AVATAR
+   ========================================================= */
+
+.latest-user img {
+  width: 44px;
+  height: 44px;
+
+  min-width: 44px;
+
+  border-radius: 50%;
+
+  object-fit: cover;
+
+  background: #151b2a;
+
+  border:
+    2px solid rgba(139, 92, 246, 0.25);
 }
 
-.latest-user h4{
-margin:0;
-color:white;
+
+/* =========================================================
+   USER CONTENT
+   ========================================================= */
+
+.latest-user > div {
+  min-width: 0;
+
+  flex: 1;
 }
 
-.latest-user span{
-color:#9ca3af;
-font-size:13px;
+.latest-user h4 {
+  margin: 0;
+
+  color: #ffffff;
+
+  font-size: 13px;
+  font-weight: 650;
+
+  line-height: 1.4;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.latest-user span {
+  display: block;
+
+  margin-top: 3px;
+
+  color: #64748b;
+
+  font-size: 11px;
+
+  line-height: 1.4;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   HOVER
+   ========================================================= */
+
+.latest-user:hover {
+  background: rgba(139, 92, 246, 0.04);
+
+  transform: translateX(2px);
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 650px) {
+  .latest-users-card {
+    padding: 16px;
+  }
+
+  .latest-user img {
+    width: 40px;
+    height: 40px;
+
+    min-width: 40px;
+  }
 }

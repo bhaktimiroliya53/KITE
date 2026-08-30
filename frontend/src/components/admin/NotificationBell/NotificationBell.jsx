@@ -10,10 +10,6 @@ function NotificationBell() {
 
     const user = JSON.parse(localStorage.getItem("user"));
 
-if (!user?._id) {
-    return null;
-}
-
     useEffect(() => {
 
         fetchNotifications();
@@ -21,22 +17,24 @@ if (!user?._id) {
         socket.emit("join", user._id);
 
         socket.on("newNotification", (notification) => {
-
             setNotifications((prev) => [
                 notification,
                 ...prev,
             ]);
-
         });
 
         return () => {
-
             socket.off("newNotification");
-
         };
+
     }, []);
 
+    if (!user?._id) {
+        return null;
+    }
+
     const fetchNotifications = async () => {
+
         try {
             const res = await API.get("/admin/notifications", {
                 params: {
@@ -85,7 +83,10 @@ if (!user?._id) {
 
             <button
                 className="bell-btn"
-                onClick={() => setOpen(!open)}
+                onClick={() => {
+                    console.log("🔔 BELL CLICKED");
+                    setOpen((prev) => !prev);
+                }}
             >
                 <Bell size={21} />
 

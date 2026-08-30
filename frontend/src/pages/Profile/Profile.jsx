@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import API from "../../services/api";
 import { useNavigate } from "react-router-dom";
+import "../../styles/user/profile.css";
 
 function Profile() {
   const navigate = useNavigate();
@@ -19,15 +20,14 @@ function Profile() {
 
   const fetchPosts = async () => {
     try {
-      const res = await API.get("/posts");
-
-      const myPosts = res.data.filter(
-        (post) => post.userId?._id?.toString() === user._id,
+      const res = await API.get(
+        `/posts/user/${user._id}?currentUserId=${user._id}`
       );
 
-      setPosts(myPosts);
+      setPosts(res.data.posts || []);
     } catch (error) {
-      console.log(error);
+      console.log("FETCH PROFILE POSTS ERROR =>", error);
+      setPosts([]);
     }
   };
 
@@ -79,131 +79,176 @@ function Profile() {
   if (!profileUser) return null;
   return (
     <div className="profile-page">
+
+      {/* BACK BUTTON */}
       <button className="back-btn" onClick={() => navigate("/home")}>
         ←
       </button>
 
-      <div className="profile-header">
-        <img
-          src={profileUser?.avatar || "https://i.pravatar.cc/150"}
-          alt=""
-          className="profile-avatar"
-          onClick={() => fileInputRef.current.click()}
-          style={{ cursor: "pointer" }}
-        />
-        <input
-          type="file"
-          accept="image/*"
-          hidden
-          ref={fileInputRef}
-          onChange={handleAvatarChange}
-        />
+      {/* PROFILE HEADER */}
+      <section className="profile-header">
 
-        <h2>{profileUser?.username}</h2>
+        <div className="profile-main">
 
-        <p>{profileUser?.bio || "No bio yet"}</p>
-
-        <div className="profile-stats">
-          <div>
-            <h3>{posts.length}</h3>
-            <span>Posts</span>
+          {/* AVATAR */}
+          <div className="profile-avatar-wrapper">
+            <img
+              src={profileUser?.avatar || "https://i.pravatar.cc/150"}
+              alt={user?.username || "Profile"}
+              className="profile-avatar"
+            />
           </div>
 
-          <div
-            style={{ cursor: "pointer" }}
-            onClick={() => setShowFollowers(true)}
-          >
-            <h3>{profileUser?.followers?.length || 0}</h3>
-            <span>Followers</span>
+          {/* PROFILE DETAILS */}
+          <div className="profile-details">
+
+            <div className="profile-title-row">
+              <h2>{profileUser?.username}</h2>
+
+              <span className="profile-badge">
+                ✓
+              </span>
+            </div>
+
+            <p className="profile-bio">
+              {profileUser?.bio || "No bio yet."}
+            </p>
+
+            {/* STATS */}
+            <div className="profile-stats">
+
+              <div>
+                <h3>{posts.length}</h3>
+                <span>Posts</span>
+              </div>
+
+              <div onClick={() => setShowFollowers(true)}>
+                <h3>
+                  {profileUser?.followers?.length || 0}
+                </h3>
+                <span>Followers</span>
+              </div>
+
+              <div onClick={() => setShowFollowing(true)}>
+                <h3>
+                  {profileUser?.following?.length || 0}
+                </h3>
+                <span>Following</span>
+              </div>
+
+            </div>
+
+            {/* ACTION BUTTONS */}
+            <div className="profile-buttons">
+
+              <button
+                className="edit-profile-btn"
+                onClick={() => navigate("/edit-profile")}
+              >
+                Edit Profile
+              </button>
+
+              <button
+                className="saved-posts-btn"
+                onClick={() => navigate("/saved-posts")}
+              >
+                🔖 Saved
+              </button>
+
+            </div>
+
           </div>
 
-          <div
-            style={{ cursor: "pointer" }}
-            onClick={() => setShowFollowing(true)}
-          >
-            <h3>{profileUser?.following?.length || 0}</h3>
-            <span>Following</span>
-          </div>
         </div>
 
-        <div className="profile-buttons">
-          <button
-            className="edit-profile-btn"
-            onClick={() => navigate("/edit-profile")}
-          >
-            Edit Profile
-          </button>
+      </section>
 
-          <button
-            className="saved-posts-btn"
-            onClick={() => navigate("/saved-posts")}
-          >
-            🔖 Saved
+      {/* POSTS SECTION */}
+      <section className="profile-post-section">
+
+        <div className="profile-tabs">
+          <button className="active-tab">
+            ▦ Posts
           </button>
         </div>
-      </div>
 
-      <div className="profile-tabs">
-        <button className="active-tab">▦ Posts</button>
-      </div>
+        <div className="profile-posts-grid">
 
-      <div className="profile-posts-grid">
-        {posts.map((post) => (
-          <div className="profile-post-card" key={post._id} onClick={() => navigate(`/post/${post._id}`)}
-          >
-            {post.image ? (
-              <img src={post.image || "https://placehold.co/600x400"}
-                alt="" className="profile-post-image" />
-            ) : (
-              <div className="text-post-card">{post.content}</div>
-            )}
-          </div>
-        ))}
-      </div>
+          {posts.map((post) => (
+            <div
+              className="profile-post-card"
+              key={post._id}
+              onClick={() => navigate(`/post/${post._id}`)}
+            >
+
+              {post.image ? (
+                <img
+                  src={post.image}
+                  alt="Post"
+                  className="profile-post-image"
+                />
+              ) : (
+                <div className="text-post-card">
+                  {post.content}
+                </div>
+              )}
+
+            </div>
+          ))}
+
+        </div>
+
+      </section>
+
+      {/* FOLLOWERS MODAL */}
       {showFollowers && (
         <div className="modal-overlay">
           <div className="comment-modal">
+
             <div className="comment-header">
               <h3>Followers</h3>
+
               <button
                 className="close-modal-btn"
                 onClick={() => setShowFollowers(false)}
               >
                 ×
-              </button>{" "}
+              </button>
             </div>
 
-            {profileUser.followers?.map((follower) => (
-              <div
-                key={follower._id}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "10px",
-                  marginBottom: "10px",
-                }}
-              >
-                <img
-                  src={follower.avatar || "https://i.pravatar.cc/150"}
-                  alt=""
-                  width="40"
-                  height="40"
-                  style={{
-                    borderRadius: "50%",
-                    objectFit: "cover",
+            {profileUser?.followers?.length > 0 ? (
+              profileUser.followers.map((follower) => (
+                <div
+                  className="user-list-item"
+                  key={follower._id}
+                  onClick={() => {
+                    setShowFollowers(false);
+                    navigate(`/user/${follower._id}`);
                   }}
-                />
+                >
+                  <img
+                    src={follower.avatar || "https://i.pravatar.cc/50"}
+                    alt={follower.username || "User"}
+                  />
 
-                <span>{follower.username}</span>
-              </div>
-            ))}
+                  <span>
+                    {follower.username}
+                  </span>
+                </div>
+              ))
+            ) : (
+              <p>No followers yet</p>
+            )}
+
           </div>
         </div>
       )}
 
+      {/* FOLLOWING MODAL */}
       {showFollowing && (
         <div className="modal-overlay">
           <div className="comment-modal">
+
             <div className="comment-header">
               <h3>Following</h3>
 
@@ -215,33 +260,34 @@ function Profile() {
               </button>
             </div>
 
-            {profileUser.following?.map((following) => (
-              <div
-                key={following._id}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "10px",
-                  marginBottom: "10px",
-                }}
-              >
-                <img
-                  src={following.avatar || "https://i.pravatar.cc/150"}
-                  alt=""
-                  width="40"
-                  height="40"
-                  style={{
-                    borderRadius: "50%",
-                    objectFit: "cover",
+            {profileUser?.following?.length > 0 ? (
+              profileUser.following.map((followingUser) => (
+                <div
+                  className="user-list-item"
+                  key={followingUser._id}
+                  onClick={() => {
+                    setShowFollowing(false);
+                    navigate(`/user/${followingUser._id}`);
                   }}
-                />
+                >
+                  <img
+                    src={followingUser.avatar || "https://i.pravatar.cc/50"}
+                    alt={followingUser.username || "User"}
+                  />
 
-                <span>{following.username}</span>
-              </div>
-            ))}
+                  <span>
+                    {followingUser.username}
+                  </span>
+                </div>
+              ))
+            ) : (
+              <p>Not following anyone</p>
+            )}
+
           </div>
         </div>
       )}
+
     </div>
   );
 }

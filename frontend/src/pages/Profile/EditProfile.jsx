@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../../services/api";
 import "../../styles/user/Privacy.css";
@@ -7,7 +7,9 @@ import "../../styles/user/EditProfile.css";
 function EditProfile() {
   const navigate = useNavigate();
 
-  const user = JSON.parse(localStorage.getItem("user"));
+  const [user, setUser] = useState(
+    JSON.parse(localStorage.getItem("user"))
+  );
 
   const [username, setUsername] = useState(user?.username || "");
 
@@ -22,7 +24,13 @@ function EditProfile() {
 
   const [privateAccount, setPrivateAccount] = useState(false);
   const [showActivity, setShowActivity] = useState(true);
-  
+
+  useEffect(() => {
+    if (user) {
+      setPrivateAccount(user.privateAccount ?? false);
+      setShowActivity(user.showActivity ?? true);
+    }
+  }, [user]);
 
   const handleSave = async () => {
     try {
@@ -48,11 +56,11 @@ function EditProfile() {
     const data = new FormData();
 
     data.append("file", file);
-    data.append("upload_preset", "kiteapp");
+    data.append("upload_preset", "kite_upload");
 
     try {
       const res = await fetch(
-        "https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/image/upload",
+        "https://api.cloudinary.com/v1_1/kiteapp/image/upload",
         {
           method: "POST",
           body: data,
@@ -126,34 +134,34 @@ function EditProfile() {
                   Upload Image
                 </button>
               </div>
-              
-                <label>Username</label>
 
-                <input
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                />
+              <label>Username</label>
 
-                <label>Bio</label>
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
 
-                <textarea
-                  value={bio}
-                  onChange={(e) => setBio(e.target.value)}
-                />
+              <label>Bio</label>
 
-                <div className="edit-actions">
-                  <button
-                    className="cancel-btn"
-                    onClick={() => navigate("/profile")}
-                  >
-                    Cancel
-                  </button>
+              <textarea
+                value={bio}
+                onChange={(e) => setBio(e.target.value)}
+              />
 
-                  <button className="save-btn" onClick={handleSave}>
-                    Save
-                  </button>
-                </div>
+              <div className="edit-actions">
+                <button
+                  className="cancel-btn"
+                  onClick={() => navigate("/profile")}
+                >
+                  Cancel
+                </button>
+
+                <button className="save-btn" onClick={handleSave}>
+                  Save
+                </button>
+              </div>
             </>
           )}
 
@@ -227,7 +235,25 @@ function EditProfile() {
                     <input
                       type="checkbox"
                       checked={privateAccount}
-                      onChange={() => setPrivateAccount(!privateAccount)}
+                      onChange={async () => {
+                        const newValue = !privateAccount;
+
+                        setPrivateAccount(newValue);
+
+                        try {
+                          const res = await API.put(`/users/settings/${user._id}`, {
+                            privateAccount: newValue,
+                            showActivity,
+                          });
+
+                          setUser(res.data);
+                          localStorage.setItem("user", JSON.stringify(res.data));
+
+                        } catch (error) {
+                          console.log("PRIVATE ACCOUNT ERROR =>", error);
+                          setPrivateAccount(!newValue);
+                        }
+                      }}
                     />
                     <span className="slider"></span>
                   </label>
@@ -243,7 +269,24 @@ function EditProfile() {
                     <input
                       type="checkbox"
                       checked={showActivity}
-                      onChange={() => setShowActivity(!showActivity)}
+                      onChange={async () => {
+                        const newValue = !showActivity;
+
+                        setShowActivity(newValue);
+
+                        try {
+                          const res = await API.put(`/users/settings/${user._id}`, {
+                            privateAccount,
+                            showActivity: newValue,
+                          });
+
+                          setUser(res.data);
+                          localStorage.setItem("user", JSON.stringify(res.data));
+                        } catch (error) {
+                          console.log("ACTIVITY STATUS ERROR =>", error);
+                          setShowActivity(!newValue);
+                        }
+                      }}
                     />
                     <span className="slider"></span>
                   </label>

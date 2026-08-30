@@ -11,9 +11,10 @@ import Sidebar from "../../components/user/Sidebar/Sidebar";
 import Topbar from "../../components/user/Topbar/Topbar";
 import "../../styles/user/home.css";
 import "../../styles/user/feed.css";
+import "../../styles/user/createpost.css";
 import "../../styles/user/postcard.css";
 import { FiRepeat } from "react-icons/fi";
-import "../../styles/user/createpost.css";
+
 
 function Home() {
   const user = JSON.parse(localStorage.getItem("user") || "{}");
@@ -68,7 +69,16 @@ function Home() {
 
   const fetchPosts = async () => {
     try {
-      const res = await API.get("/posts");
+      const currentUser = JSON.parse(
+        localStorage.getItem("user") || "{}"
+      );
+
+      const res = await API.get("/posts", {
+        params: {
+          userId: currentUser?._id,
+        },
+      });
+
       setPosts(res.data);
     } catch (error) {
       console.log(error);
@@ -507,22 +517,17 @@ function Home() {
               </button>
             </div>
 
-            {/* {isPosting && (
-            <div className="feed-progress">
-              <div className="feed-progress-bar"></div>
-            </div>
-          )} */}
+
 
             {isPosting && (
-              <div
-                style={{
-                  background: "red",
-                  color: "white",
-                  padding: "20px",
-                  fontSize: "30px",
-                }}
-              >
-                POSTING...
+              <div className="posting-overlay">
+                <div className="posting-loader-card">
+                  <div className="posting-spinner"></div>
+
+                  <h3>Creating your post...</h3>
+
+                  <p>Please wait a moment</p>
+                </div>
               </div>
             )}
             {/* DYNAMIC POSTS */}
@@ -798,15 +803,33 @@ function Home() {
               <textarea
                 placeholder="What's new?"
                 value={content}
+                maxLength={280}
                 onChange={(e) => setContent(e.target.value)}
               />
 
+              <div className="character-counter">
+                {content.length}/280
+              </div>
+
               {imagePreview && (
-                <img
-                  src={imagePreview}
-                  alt="preview"
-                  className="preview-image"
-                />
+                <div className="preview-wrapper">
+                  <img
+                    src={imagePreview}
+                    alt="preview"
+                    className="preview-image"
+                  />
+
+                  <button
+                    type="button"
+                    className="remove-image-btn"
+                    onClick={() => {
+                      setImagePreview("");
+                      setSelectedImage(null);
+                    }}
+                  >
+                    ✕
+                  </button>
+                </div>
               )}
 
               <input

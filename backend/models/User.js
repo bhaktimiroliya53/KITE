@@ -42,6 +42,14 @@ const userSchema = new mongoose.Schema(
         ref: "User",
       },
     ],
+
+    followRequests: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+
     privateAccount: {
       type: Boolean,
       default: false,
@@ -61,6 +69,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ["user", "admin"],
       default: "user",
+      trim: true,
     },
 
 

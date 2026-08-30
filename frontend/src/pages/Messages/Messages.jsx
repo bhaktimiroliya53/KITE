@@ -14,7 +14,6 @@ function Messages() {
     fetchUsers();
   }, []);
 
-
   const fetchUsers = async () => {
     try {
       const res = await API.get("/users");
@@ -23,29 +22,59 @@ function Messages() {
         localStorage.getItem("user") || "{}"
       );
 
-      setUsers(
-        res.data.filter(
-          (u) => u._id !== currentUser._id
-        )
+      if (!currentUser?._id) {
+        setUsers([]);
+        return;
+      }
+
+      // Get the latest current user data from backend
+      const currentUserData = res.data.find(
+        (u) => String(u._id) === String(currentUser._id)
       );
 
+      if (!currentUserData) {
+        setUsers([]);
+        return;
+      }
+
+      const currentUserFollowing =
+        currentUserData.following || [];
+
+      // Show only MUTUAL connections
+      const mutualUsers = res.data.filter((u) => {
+        // Don't show yourself
+        if (String(u._id) === String(currentUser._id)) {
+          return false;
+        }
+
+        // You follow this user
+        const youFollowThem = currentUserFollowing.some(
+          (id) => String(id) === String(u._id)
+        );
+
+        // This user follows you
+        const theyFollowYou = (u.following || []).some(
+          (id) => String(id) === String(currentUser._id)
+        );
+
+        // Both must follow each other
+        return youFollowThem && theyFollowYou;
+      });
+
+      setUsers(mutualUsers);
     } catch (error) {
       console.log(error);
     }
   };
 
-
   return (
     <div className="chat-container">
-
 
       {/* LEFT CONNECT PANEL */}
 
       <div className="users-list">
 
-
         <div className="users-header">
-
 
           <div className="connect-title">
 
@@ -56,15 +85,11 @@ function Messages() {
               <FaArrowLeft />
             </button>
 
-
             <h2>
               Connect
             </h2>
 
-
           </div>
-
-
 
           <input
             className="user-search"
@@ -75,10 +100,7 @@ function Messages() {
             }
           />
 
-
         </div>
-
-
 
         {
           users
@@ -97,9 +119,7 @@ function Messages() {
                 }
               >
 
-
                 <div className="avatar-wrapper">
-
 
                   <img
                     src={
@@ -109,76 +129,58 @@ function Messages() {
                     alt=""
                   />
 
-
                   <span className="online-dot"></span>
-
 
                 </div>
 
-
-
                 <div className="user-info">
-
 
                   <h4>
                     {user.username}
                   </h4>
 
-
                   <p>
                     Tap to chat
                   </p>
 
-
                 </div>
-
-
 
               </div>
 
             ))
         }
 
-
-
       </div>
-
-
-
 
 
       {/* RIGHT EMPTY CONNECT SCREEN */}
 
+      <div className="connect-empty">
 
-     <div className="connect-empty">
+        <div className="empty-content">
 
-  <div className="empty-content">
+          <img
+            src={logo}
+            alt="KITE"
+            className="connect-logo"
+          />
 
-    <img
-      src={logo}
-      alt="KITE"
-      className="connect-logo"
-    />
+          <h1>
+            Welcome to Connect
+          </h1>
 
-    <h1>
-      Welcome to Connect
-    </h1>
+          <p>
+            Choose someone from your network
+            <br />
+            and start a conversation.
+          </p>
 
-    <p>
-      Choose someone from your network
-      <br/>
-      and start a conversation.
-    </p>
+        </div>
 
-  </div>
-
-</div>
-
-
+      </div>
 
     </div>
   );
 }
-
 
 export default Messages;

@@ -70,9 +70,10 @@ function Sidebar() {
             </button>
 
 
+            {/* Discover */}
             <button
               className={active === "Discover" ? "active" : ""}
-              onClick={() => handleNavigation("Discover", "/search")}
+              onClick={() => handleNavigation("Discover", "/explore")}
             >
               <Compass size={21} strokeWidth={1.8} />
               <span>Discover</span>
@@ -88,9 +89,10 @@ function Sidebar() {
             </button>
 
 
+            {/* Pulse */}
             <button
               className={active === "Pulse" ? "active" : ""}
-              onClick={() => handleNavigation("Pulse", "/notifications")}
+              onClick={() => handleNavigation("Pulse", "/notification")}
             >
               <Bell size={21} strokeWidth={1.8} />
               <span>Pulse</span>
@@ -143,12 +145,23 @@ function Sidebar() {
           {/* SETTINGS */}
           <nav className="menu bottom-menu">
 
-            <button>
+            <button
+              onClick={() => navigate("/edit-profile")}
+            >
               <Settings size={21} strokeWidth={1.8} />
               <span>Preferences</span>
             </button>
 
-            <button>
+            <button
+              onClick={() => {
+                showLoader();
+
+                setTimeout(() => {
+                  hideLoader();
+                  navigate("/support");
+                }, 600);
+              }}
+            >
               <CircleHelp size={21} strokeWidth={1.8} />
               <span>Support</span>
             </button>
@@ -158,17 +171,17 @@ function Sidebar() {
           {/* PROFILE */}
           <div className="profile-card">
             <img
-              src="https://i.pravatar.cc/150"
+              src={JSON.parse(localStorage.getItem("user"))?.avatar || "https://i.pravatar.cc/150"}
               alt="Profile"
             />
 
             <div className="profile-info">
               <div className="profile-name">
-                KITE User
+                {JSON.parse(localStorage.getItem("user"))?.username || "KITE User"}
               </div>
 
               <div className="profile-username">
-                @user
+                @{JSON.parse(localStorage.getItem("user"))?.username || "user"}
               </div>
             </div>
           </div>

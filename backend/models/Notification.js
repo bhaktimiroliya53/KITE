@@ -16,6 +16,24 @@ const notificationSchema = new mongoose.Schema(
             type: Boolean,
             default: false,
         },
+
+        // User who receives this notification
+        userId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            required: false,
+        },
+
+        actorId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            required: false,
+        },
+
+        actorUsername: {
+            type: String,
+            required: false,
+        },
     },
     {
         timestamps: true,

@@ -1,6 +1,6 @@
 const Post = require("../models/Post");
-const User = require("../models/User");
 const cloudinary = require("../config/cloudinary");
+const User = require("../models/User");
 
 // Create Post
 exports.createPost = async (req, res) => {
@@ -44,17 +44,55 @@ exports.createPost = async (req, res) => {
     });
   }
 };
+
 // Get All Posts
 exports.getPosts = async (req, res) => {
   try {
+    const currentUserId = req.query.userId;
+
+    const currentUser = currentUserId
+      ? await User.findById(currentUserId)
+      : null;
+
     const posts = await Post.find({})
-      .populate("userId", "username avatar")
+      .populate("userId", "username avatar privateAccount followers")
       .populate("likes", "username avatar")
       .populate("reposts", "username avatar")
       .sort({ _id: -1 })
       .limit(100);
 
-    res.status(200).json(posts);
+    const visiblePosts = posts.filter((post) => {
+      const postOwner = post.userId;
+
+      // Safety check
+      if (!postOwner) return false;
+
+      // Public account → everyone can see
+      if (!postOwner.privateAccount) {
+        return true;
+      }
+
+      // Private account → owner can see own posts
+      if (
+        currentUserId &&
+        postOwner._id.toString() === currentUserId.toString()
+      ) {
+        return true;
+      }
+
+      // Private account → approved followers can see
+      if (currentUserId) {
+        return postOwner.followers?.some(
+          (followerId) =>
+            followerId.toString() === currentUserId.toString()
+        );
+      }
+
+      // Not logged in → cannot see private posts
+      return false;
+    });
+
+    res.status(200).json(visiblePosts);
   } catch (error) {
     console.log("GET POSTS ERROR =>", error);
 
@@ -224,7 +262,7 @@ exports.addComment = async (req, res) => {
   }
 };
 
-exports.addReply = async (req,res)=>{
+exports.addReply = async (req, res) => {
   try {
 
     const {
@@ -240,28 +278,28 @@ exports.addReply = async (req,res)=>{
     );
 
 
-    if(!post){
+    if (!post) {
       return res.status(404).json({
-        message:"Post not found"
+        message: "Post not found"
       });
     }
 
 
     const comment =
       post.comments[
-        req.params.commentIndex
+      req.params.commentIndex
       ];
 
 
-    if(!comment){
+    if (!comment) {
       return res.status(404).json({
-        message:"Comment not found"
+        message: "Comment not found"
       });
     }
 
 
-    if(!comment.replies){
-      comment.replies=[];
+    if (!comment.replies) {
+      comment.replies = [];
     }
 
 
@@ -270,11 +308,11 @@ exports.addReply = async (req,res)=>{
       userId,
       avatar,
       text,
-      image:image || "",
+      image: image || "",
 
-      likes:[],
+      likes: [],
 
-      createdAt:new Date()
+      createdAt: new Date()
 
     });
 
@@ -285,12 +323,12 @@ exports.addReply = async (req,res)=>{
     res.status(200).json(post);
 
 
-  }catch(error){
+  } catch (error) {
 
     console.log(error);
 
     res.status(500).json({
-      message:error.message
+      message: error.message
     });
 
   }
@@ -411,15 +449,51 @@ exports.toggleSave = async (req, res) => {
 // Get User Posts
 exports.getUserPosts = async (req, res) => {
   try {
+    const profileUserId = req.params.userId;
+    const currentUserId = req.query.currentUserId;
+
+    const profileUser = await User.findById(profileUserId);
+
+    if (!profileUser) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    const isOwner =
+      currentUserId &&
+      profileUser._id.toString() === currentUserId.toString();
+
+    const isFollower =
+      currentUserId &&
+      profileUser.followers?.some(
+        (followerId) =>
+          followerId.toString() === currentUserId.toString()
+      );
+
+    // PRIVATE ACCOUNT
+    if (profileUser.privateAccount && !isOwner && !isFollower) {
+      return res.status(403).json({
+        privateAccount: true,
+        message: "This account is private",
+        posts: [],
+      });
+    }
+
     const posts = await Post.find({
-      userId: req.params.userId,
+      userId: profileUserId,
     })
-      .populate("userId", "username avatar")
+      .populate("userId", "username avatar privateAccount followers")
       .populate("likes", "username avatar")
       .populate("reposts", "username avatar")
       .sort({ _id: -1 });
 
-    res.status(200).json(posts);
+    res.status(200).json({
+      privateAccount: profileUser.privateAccount,
+      canViewPosts: true,
+      posts,
+    });
+
   } catch (error) {
     console.log("GET USER POSTS ERROR =>", error);
 
@@ -548,69 +622,69 @@ exports.toggleReplyLike = async (req, res) => {
 };
 
 // Repost Comment
-exports.repostComment = async(req,res)=>{
+exports.repostComment = async (req, res) => {
 
- try{
+  try {
 
-  const {userId}=req.body;
-
-
-  const post = await Post.findById(req.params.postId);
+    const { userId } = req.body;
 
 
-  if(!post){
-    return res.status(404).json({
-      message:"Post not found"
+    const post = await Post.findById(req.params.postId);
+
+
+    if (!post) {
+      return res.status(404).json({
+        message: "Post not found"
+      });
+    }
+
+
+    const comment = post.comments[req.params.commentIndex];
+
+
+    if (!comment) {
+      return res.status(404).json({
+        message: "Comment not found"
+      });
+    }
+
+
+    if (!comment.reposts) {
+      comment.reposts = [];
+    }
+
+
+    const already =
+      comment.reposts.includes(userId);
+
+
+
+    if (already) {
+
+      comment.reposts =
+        comment.reposts.filter(
+          id => id !== userId
+        );
+
+    } else {
+
+      comment.reposts.push(userId);
+
+    }
+
+
+    await post.save();
+
+
+    res.status(200).json(post);
+
+
+  } catch (error) {
+
+    res.status(500).json({
+      message: error.message
     });
-  }
-
-
-  const comment = post.comments[req.params.commentIndex];
-
-
-  if(!comment){
-    return res.status(404).json({
-      message:"Comment not found"
-    });
-  }
-
-
-  if(!comment.reposts){
-    comment.reposts=[];
-  }
-
-
-  const already =
-  comment.reposts.includes(userId);
-
-
-
-  if(already){
-
-    comment.reposts =
-    comment.reposts.filter(
-      id=>id!==userId
-    );
-
-  }else{
-
-    comment.reposts.push(userId);
 
   }
-
-
-  await post.save();
-
-
-  res.status(200).json(post);
-
-
- }catch(error){
-
-  res.status(500).json({
-    message:error.message
-  });
-
- }
 
 };

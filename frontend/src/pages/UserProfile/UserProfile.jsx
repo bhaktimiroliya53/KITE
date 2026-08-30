@@ -9,7 +9,9 @@ function UserProfile() {
 
   const [user, setUser] = useState(null);
   const [isFollowing, setIsFollowing] = useState(false);
+  const [isRequested, setIsRequested] = useState(false);
   const [posts, setPosts] = useState([]);
+  const [canViewPosts, setCanViewPosts] = useState(true);
 
   const [showFollowers, setShowFollowers] = useState(false);
   const [showFollowing, setShowFollowing] = useState(false);
@@ -22,8 +24,14 @@ function UserProfile() {
 
       setIsFollowing(
         res.data.followers?.some(
-          (follower) => follower._id === currentUser._id,
-        ),
+          (follower) => follower._id === currentUser._id
+        )
+      );
+
+      setIsRequested(
+        res.data.followRequests?.some(
+          (request) => request._id === currentUser._id
+        )
       );
     } catch (error) {
       console.log(error);
@@ -32,25 +40,59 @@ function UserProfile() {
 
   const fetchPosts = async () => {
     try {
-      const res = await API.get("/posts");
+      const res = await API.get(`/posts/user/${id}`, {
+        params: {
+          currentUserId: currentUser?._id,
+        },
+      });
 
-      const userPosts = res.data.filter((post) => post.userId?._id === id);
+      if (res.data.privateAccount && !res.data.canViewPosts) {
+        setPosts([]);
+        setCanViewPosts(false);
+        return;
+      }
 
-      setPosts(userPosts);
+      setCanViewPosts(true);
+      setPosts(res.data.posts || []);
     } catch (error) {
+      if (error.response?.status === 403) {
+        setPosts([]);
+        setCanViewPosts(false);
+        return;
+      }
+
       console.log(error);
     }
   };
 
   const handleFollow = async () => {
     try {
-      await API.put(`/users/follow/${id}`, {
+      const res = await API.put(`/users/follow/${id}`, {
         currentUserId: currentUser._id,
       });
 
-      fetchUser();
+      if (res.data.status === "requested") {
+        setIsRequested(true);
+      }
+
+      if (res.data.status === "request_cancelled") {
+        setIsRequested(false);
+      }
+
+      if (res.data.status === "following") {
+        setIsFollowing(true);
+        setIsRequested(false);
+      }
+
+      if (res.data.status === "unfollowed") {
+        setIsFollowing(false);
+      }
+
+      await fetchUser();
+      await fetchPosts();
+
     } catch (error) {
-      console.log(error);
+      console.log("FOLLOW ERROR =>", error);
     }
   };
 
@@ -117,8 +159,15 @@ function UserProfile() {
         </div>
 
         {currentUser._id !== user._id && (
-          <button className="edit-profile-btn" onClick={handleFollow}>
-            {isFollowing ? "Unfollow" : "Follow"}
+          <button
+            className="edit-profile-btn"
+            onClick={handleFollow}
+          >
+            {isFollowing
+              ? "Unfollow"
+              : isRequested
+                ? "Requested"
+                : "Follow"}
           </button>
         )}
       </div>
@@ -127,18 +176,40 @@ function UserProfile() {
         <button className="active-tab">▦ Posts</button>
       </div>
 
-      <div className="profile-posts-grid">
-        {posts.map((post) => (
-          <div className="profile-post-card" key={post._id}>
-            {post.image ? (
-              <img src={post.image || "https://placehold.co/600x400"}
-               alt="" className="profile-post-image" />
-            ) : (
-              <div className="text-post-card">{post.content}</div>
-            )}
-          </div>
-        ))}
-      </div>
+      {!canViewPosts ? (
+        <div className="private-profile-message">
+          <div className="private-lock">🔒</div>
+
+          <h3>This Account is Private</h3>
+
+          <p>
+            Follow this account to see their posts.
+          </p>
+        </div>
+      ) : 
+      
+      (
+        <div className="profile-posts-grid">
+          {posts.map((post) => (
+            <div
+              className="profile-post-card"
+              key={post._id}
+            >
+              {post.image ? (
+                <img
+                  src={post.image}
+                  alt=""
+                  className="profile-post-image"
+                />
+              ) : (
+                <div className="text-post-card">
+                  {post.content}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
 
       {showFollowers && (
         <div className="modal-overlay">

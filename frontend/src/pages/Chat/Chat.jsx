@@ -762,7 +762,7 @@ console.log("SENDING GIF =>", selectedGif);
           {
             editMessage
               ? "✓"
-              : "➤"
+              : "₹"
           }
 
         </button>

@@ -1,13 +1,64 @@
-.chart-card{
-    background: rgba(255,255,255,.05);
-    border:1px solid rgba(255,255,255,.08);
-    border-radius:20px;
-    padding:25px;
-    margin-bottom:40px;
-    backdrop-filter:blur(20px);
+/* =========================================================
+   KITE ADMIN — CHART
+   ========================================================= */
+
+.chart-card {
+  width: 100%;
+  min-width: 0;
+
+  padding: 20px;
+
+  background: #101522;
+
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 16px;
+
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.16);
+
+  overflow: hidden;
 }
 
-.chart-card h2{
-    color:white;
-    margin-bottom:20px;
+
+/* =========================================================
+   CHART TITLE
+   ========================================================= */
+
+.chart-card h2 {
+  margin: 0 0 18px;
+
+  color: #ffffff;
+
+  font-size: 18px;
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   CHART CONTAINER
+   ========================================================= */
+
+.chart-card canvas {
+  display: block;
+
+  width: 100% !important;
+  max-width: 100%;
+
+  height: auto !important;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 650px) {
+  .chart-card {
+    padding: 16px;
+  }
+
+  .chart-card h2 {
+    font-size: 16px;
+    margin-bottom: 14px;
+  }
 }

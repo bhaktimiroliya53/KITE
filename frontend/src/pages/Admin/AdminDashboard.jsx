@@ -186,6 +186,84 @@ function AdminDashboard() {
 
                 <DashboardCards stats={stats} />
 
+                {/* Quick Actions */}
+                <div className="quick-actions">
+                    <div className="quick-actions-header">
+                        <div>
+                            <h2>⚡ Quick Actions</h2>
+                            <p>Manage your platform quickly</p>
+                        </div>
+                    </div>
+
+                    <div className="quick-actions-grid">
+
+                        <button
+                            className="quick-action-card"
+                            onClick={() => scrollToSection("users")}
+                        >
+                            <div className="quick-action-icon purple">
+                                👥
+                            </div>
+
+                            <div>
+                                <strong>Manage Users</strong>
+                                <span>View and manage users</span>
+                            </div>
+
+                            <b>→</b>
+                        </button>
+
+                        <button
+                            className="quick-action-card"
+                            onClick={() => scrollToSection("posts")}
+                        >
+                            <div className="quick-action-icon blue">
+                                📝
+                            </div>
+
+                            <div>
+                                <strong>Manage Posts</strong>
+                                <span>Review platform posts</span>
+                            </div>
+
+                            <b>→</b>
+                        </button>
+
+                        <button
+                            className="quick-action-card"
+                            onClick={() => scrollToSection("analytics")}
+                        >
+                            <div className="quick-action-icon green">
+                                📊
+                            </div>
+
+                            <div>
+                                <strong>View Analytics</strong>
+                                <span>Check platform performance</span>
+                            </div>
+
+                            <b>→</b>
+                        </button>
+
+                        <button
+                            className="quick-action-card"
+                            onClick={() => scrollToSection("settings")}
+                        >
+                            <div className="quick-action-icon orange">
+                                ⚙️
+                            </div>
+
+                            <div>
+                                <strong>Settings</strong>
+                                <span>Configure admin settings</span>
+                            </div>
+
+                            <b>→</b>
+                        </button>
+
+                    </div>
+                </div>
+
                 <div className="dashboard-grid">
 
                     <div className="left-panel">
@@ -245,7 +323,7 @@ function AdminDashboard() {
                                 <tr key={item._id}>
                                     <td>
                                         <img
-                                           src={item.avatar || "https://placehold.co/50x50"}
+                                            src={item.avatar || "https://placehold.co/50x50"}
                                             alt={item.username}
                                             className="user-avatar"
                                         />
@@ -319,7 +397,7 @@ function AdminDashboard() {
                                     <td>
                                         {post.image ? (
                                             <img
-                                               src={post.image || "https://placehold.co/600x400"}
+                                                src={post.image || "https://placehold.co/600x400"}
                                                 alt="Post"
                                                 style={{
                                                     width: "80px",

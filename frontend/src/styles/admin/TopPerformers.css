@@ -1,49 +1,192 @@
-.top-performers-card{
-background:rgba(255,255,255,.05);
-border:1px solid rgba(255,255,255,.08);
-border-radius:20px;
-padding:25px;
-backdrop-filter:blur(20px);
+/* =========================================================
+   KITE ADMIN — TOP PERFORMERS
+   ========================================================= */
+
+.top-performers-card {
+  width: 100%;
+  min-width: 0;
+
+  padding: 20px;
+
+  background: #101522;
+
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 16px;
+
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.16);
+
+  overflow: hidden;
 }
 
-.top-performers-card h2{
-color:white;
-margin-bottom:20px;
+
+/* =========================================================
+   TITLE
+   ========================================================= */
+
+.top-performers-card h2 {
+  margin: 0 0 16px;
+
+  color: #ffffff;
+
+  font-size: 18px;
+  font-weight: 700;
 }
 
-.performer-item{
-display:flex;
-gap:15px;
-align-items:center;
-padding:15px 0;
-border-bottom:1px solid rgba(255,255,255,.05);
+
+/* =========================================================
+   PERFORMER ROW
+   ========================================================= */
+
+.performer-item {
+  width: 100%;
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 12px 0;
+
+  border-bottom:
+    1px solid rgba(255, 255, 255, 0.06);
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
 }
 
-.performer-item:last-child{
-border:none;
+.performer-item:last-child {
+  border-bottom: none;
 }
 
-.performer-rank{
-font-size:28px;
+
+/* =========================================================
+   RANK
+   ========================================================= */
+
+.performer-rank {
+  width: 26px;
+  min-width: 26px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #8b5cf6;
+
+  font-size: 13px;
+  font-weight: 700;
 }
 
-.performer-info{
-display:flex;
-flex-direction:column;
+
+/* =========================================================
+   AVATAR
+   ========================================================= */
+
+.performer-avatar {
+  width: 42px;
+  height: 42px;
+
+  min-width: 42px;
+
+  border-radius: 50%;
+
+  object-fit: cover;
+
+  background: #151b2a;
+
+  border:
+    2px solid rgba(139, 92, 246, 0.25);
 }
 
-.performer-info h4{
-margin:0;
-color:white;
+
+/* =========================================================
+   CONTENT
+   ========================================================= */
+
+.performer-info {
+  min-width: 0;
+
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 3px;
 }
 
-.performer-info span{
-color:#9ca3af;
-font-size:13px;
-margin-top:2px;
+.performer-info h4 {
+  margin: 0;
+
+  color: #ffffff;
+
+  font-size: 13px;
+  font-weight: 650;
+
+  line-height: 1.4;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.no-data{
-color:#9ca3af;
-text-align:center;
+.performer-info span {
+  color: #64748b;
+
+  font-size: 11px;
+
+  line-height: 1.4;
+}
+
+
+/* =========================================================
+   SCORE / VALUE
+   ========================================================= */
+
+.performer-score {
+  flex-shrink: 0;
+
+  color: #a78bfa;
+
+  font-size: 12px;
+  font-weight: 650;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   HOVER
+   ========================================================= */
+
+.performer-item:hover {
+  background:
+    rgba(139, 92, 246, 0.04);
+
+  transform: translateX(2px);
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 650px) {
+  .top-performers-card {
+    padding: 16px;
+  }
+
+  .performer-avatar {
+    width: 38px;
+    height: 38px;
+
+    min-width: 38px;
+  }
+
+  .performer-rank {
+    width: 22px;
+    min-width: 22px;
+  }
 }
