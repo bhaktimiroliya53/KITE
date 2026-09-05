@@ -722,42 +722,7 @@ function Home() {
                       </div>
 
                     </div>
-                    {post.music?.previewUrl && (
-                      <div className="post-music">
-                        <button
-                          type="button"
-                          className="post-music-play"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleMusicToggle(post);
-                          }}
-                        >
-                          {playingPostId === post._id ? (
-                            <FaPause />
-                          ) : (
-                            <FaPlay />
-                          )}
-                        </button>
 
-                        <div className="post-music-info">
-                          <div className="post-music-title">
-                            {post.music.title || "Unknown song"}
-                          </div>
-
-                          <div className="post-music-artist">
-                            {post.music.artist || "Unknown artist"}
-                          </div>
-                        </div>
-
-                        {post.music.artwork && (
-                          <img
-                            src={post.music.artwork}
-                            alt=""
-                            className="post-music-artwork"
-                          />
-                        )}
-                      </div>
-                    )}
 
                     <button
                       className="post-more-btn"
@@ -774,6 +739,54 @@ function Home() {
                     </button>
 
                   </div>
+
+                  {post.music?.previewUrl && (
+                    <div className="post-music">
+                      <button
+                        type="button"
+                        className="post-music-play"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleMusicToggle(post);
+                        }}
+                      >
+                        {playingPostId === post._id ? (
+                          <FaPause />
+                        ) : (
+                          <FaPlay />
+                        )}
+                      </button>
+
+                      <div className="post-music-info">
+                        <div className="post-music-title">
+                          {post.music.title || "Unknown song"}
+                        </div>
+
+                        <div className="post-music-artist">
+                          {post.music.artist || "Unknown artist"}
+                        </div>
+                      </div>
+
+                      <div
+                        className={`music-waves ${playingPostId === post._id ? "music-waves-playing" : ""
+                          }`}
+                      >
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                      </div>
+
+                      {post.music.artwork && (
+                        <img
+                          src={post.music.artwork}
+                          alt=""
+                          className="post-music-artwork"
+                        />
+                      )}
+                    </div>
+                  )}
 
                   <div className="post-content">
                     <p>{post.content}</p>

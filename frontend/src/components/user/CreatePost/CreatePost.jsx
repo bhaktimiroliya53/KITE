@@ -31,20 +31,25 @@ function CreatePost() {
   const [tagPeopleOpen, setTagPeopleOpen] = useState(false);
   const [users, setUsers] = useState([]);
   const [userSearch, setUserSearch] = useState("");
+
   const [locationOpen, setLocationOpen] = useState(false);
   const [location, setLocation] = useState(null);
   const [locationLoading, setLocationLoading] = useState(false);
   const [locationError, setLocationError] = useState("");
   const [locationSearch, setLocationSearch] = useState("");
   const [locationResults, setLocationResults] = useState([]);
+
   const [musicOpen, setMusicOpen] = useState(false);
   const [musicSearch, setMusicSearch] = useState("");
   const [selectedMusic, setSelectedMusic] = useState(null);
   const [musicResults, setMusicResults] = useState([]);
+  const [musicSuggestions, setMusicSuggestions] = useState([]);
   const [musicLoading, setMusicLoading] = useState(false);
   const [musicError, setMusicError] = useState("");
   const [playingMusicId, setPlayingMusicId] = useState(null);
   const audioRef = useRef(null);
+  const [musicCurrentTime, setMusicCurrentTime] = useState(0);
+  const [musicDuration, setMusicDuration] = useState(0);
 
   const onCropComplete = (_, croppedPixels) => {
     setCroppedAreaPixels(croppedPixels);
@@ -356,7 +361,7 @@ function CreatePost() {
       const response = await fetch(
         `https://itunes.apple.com/search?term=${encodeURIComponent(
           query
-        )}&country=IN&media=music&entity=song&limit=10`
+        )}&country=IN&media=music&entity=song&limit=50`
       );
 
       if (!response.ok) {
@@ -366,7 +371,18 @@ function CreatePost() {
       const data = await response.json();
 
       const songs = Array.isArray(data.results)
-        ? data.results.filter((song) => song.previewUrl)
+        ? data.results
+          // Only keep songs with playable previews
+          .filter((song) => song.previewUrl)
+
+          // Remove duplicate tracks
+          .filter(
+            (song, index, list) =>
+              index ===
+              list.findIndex(
+                (item) => item.trackId === song.trackId
+              )
+          )
         : [];
 
       setMusicResults(songs);
@@ -383,6 +399,148 @@ function CreatePost() {
     }
   };
 
+  const handleMusicQuickPick = async (query) => {
+    try {
+      setMusicSearch("");
+      setMusicResults([]);
+      setMusicError("");
+      setMusicLoading(true);
+
+      const response = await fetch(
+        `https://itunes.apple.com/search?term=${encodeURIComponent(
+          query
+        )}&country=IN&media=music&entity=song&limit=50`
+      );
+
+      if (!response.ok) {
+        throw new Error("Music quick pick failed");
+      }
+
+      const data = await response.json();
+
+      const songs = Array.isArray(data.results)
+        ? data.results
+          .filter((song) => song.previewUrl)
+          .filter(
+            (song, index, list) =>
+              index ===
+              list.findIndex(
+                (item) => item.trackId === song.trackId
+              )
+          )
+        : [];
+
+      setMusicResults(songs);
+      setMusicSuggestions([]);
+
+      if (songs.length === 0) {
+        setMusicError("No songs found for this category.");
+      }
+    } catch (error) {
+      console.error("MUSIC QUICK PICK ERROR =>", error);
+      setMusicError("Unable to load music right now.");
+      setMusicResults([]);
+    } finally {
+      setMusicLoading(false);
+    }
+  };
+
+  const handleBackToMusicSuggestions = async () => {
+    try {
+      setMusicSearch("");
+      setMusicResults([]);
+      setMusicError("");
+      setMusicLoading(true);
+
+      const response = await fetch(
+        "https://itunes.apple.com/search?term=top%20songs&country=IN&media=music&entity=song&limit=10"
+      );
+
+      if (!response.ok) {
+        throw new Error("Music suggestions failed");
+      }
+
+      const data = await response.json();
+
+      const songs = Array.isArray(data.results)
+        ? data.results
+          .filter((song) => song.previewUrl)
+          .filter(
+            (song, index, list) =>
+              index ===
+              list.findIndex(
+                (item) => item.trackId === song.trackId
+              )
+          )
+          .slice(0, 8)
+        : [];
+
+      setMusicSuggestions(songs);
+    } catch (error) {
+      console.error(
+        "MUSIC SUGGESTIONS ERROR =>",
+        error
+      );
+
+      setMusicSuggestions([]);
+    } finally {
+      setMusicLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!musicOpen) return;
+
+    const loadMusicSuggestions = async () => {
+      try {
+        const response = await fetch(
+          "https://itunes.apple.com/search?term=top%20songs&country=IN&media=music&entity=song&limit=10"
+        );
+
+        if (!response.ok) {
+          throw new Error("Music suggestions failed");
+        }
+
+        const data = await response.json();
+
+        const songs = Array.isArray(data.results)
+          ? data.results
+            .filter((song) => song.previewUrl)
+            .filter(
+              (song, index, list) =>
+                index ===
+                list.findIndex(
+                  (item) => item.trackId === song.trackId
+                )
+            )
+            .slice(0, 8)
+          : [];
+
+        setMusicSuggestions(songs);
+      } catch (error) {
+        console.error(
+          "MUSIC SUGGESTIONS ERROR =>",
+          error
+        );
+
+        setMusicSuggestions([]);
+      }
+    };
+
+    loadMusicSuggestions();
+  }, [musicOpen]);
+
+  const formatMusicTime = (time) => {
+  if (!Number.isFinite(time) || time < 0) {
+    return "0:00";
+  }
+
+  const minutes = Math.floor(time / 60);
+  const seconds = Math.floor(time % 60);
+
+  return `${minutes}:${String(seconds).padStart(2, "0")}`;
+};
+
   const handleToggleMusicPreview = (song) => {
     if (!song?.previewUrl) return;
 
@@ -394,18 +552,32 @@ function CreatePost() {
 
     if (audioRef.current) {
       audioRef.current.pause();
+      audioRef.current.currentTime = 0;
     }
 
-    const audio = new Audio(song.previewUrl);
+    setMusicCurrentTime(0);
+    setMusicDuration(0);
 
+    const audio = new Audio(song.previewUrl);
     audioRef.current = audio;
+
+    audio.ontimeupdate = () => {
+      setMusicCurrentTime(audio.currentTime);
+    };
+
+    audio.onloadedmetadata = () => {
+      setMusicDuration(audio.duration);
+    };
 
     audio.onended = () => {
       setPlayingMusicId(null);
+      setMusicCurrentTime(0);
     };
 
     audio.onerror = () => {
       setPlayingMusicId(null);
+      setMusicCurrentTime(0);
+      setMusicDuration(0);
       alert("Unable to play music preview.");
     };
 
@@ -1083,6 +1255,85 @@ function CreatePost() {
                 </button>
               </div>
 
+              {musicResults.length > 0 && !musicLoading && (
+                <button
+                  type="button"
+                  className="music-back-button"
+                  onClick={handleBackToMusicSuggestions}
+                >
+                  ← Back to Quick Picks
+                </button>
+              )}
+
+              {musicResults.length === 0 && !musicLoading && (
+                <div className="music-quick-picks">
+                  <div className="music-section-heading">
+                    <div>
+                      <span className="music-section-eyebrow">
+                        QUICK PICKS
+                      </span>
+
+                      <h4>Find your vibe</h4>
+
+                      <p>Pick a mood or category to discover music.</p>
+                    </div>
+                  </div>
+
+                  <div className="music-quick-picks-list">
+                    <button
+                      type="button"
+                      onClick={() => handleMusicQuickPick("trending songs")}
+                    >
+                      🔥 Trending
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleMusicQuickPick("romantic songs")}
+                    >
+                      ❤️ Romantic
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleMusicQuickPick("chill songs")}
+                    >
+                      🌙 Chill
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleMusicQuickPick("workout songs")}
+                    >
+                      💪 Workout
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleMusicQuickPick("Bollywood songs")}
+                    >
+                      🎬 Bollywood
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleMusicQuickPick("English songs")}
+                    >
+                      🎧 English
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleMusicQuickPick("Punjabi songs")}
+                    >
+                      💜 Punjabi
+                    </button>
+                  </div>
+                </div>
+              )}
+
+
+
               {musicLoading && (
                 <div className="music-empty-state">
                   <div className="music-empty-icon">🎵</div>
@@ -1109,15 +1360,81 @@ function CreatePost() {
 
               {!musicLoading &&
                 !musicError &&
-                musicResults.length === 0 && (
-                  <div className="music-empty-state">
-                    <div className="music-empty-icon">🎵</div>
+                musicResults.length === 0 &&
+                musicSuggestions.length > 0 && (
+                  <div className="music-suggestions-section">
+                    <div className="music-section-heading">
+                      <div>
+                        <span className="music-section-eyebrow">
+                          KITE MUSIC
+                        </span>
 
-                    <strong>Search for a song</strong>
+                        <h4>Recommended for you</h4>
 
-                    <p>
-                      Find music to add to your KITE moment.
-                    </p>
+                        <p>
+                          Discover something that fits your moment.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="music-suggestions">
+                      {musicSuggestions.map((song) => (
+                        <div
+                          className="music-result-item"
+                          key={song.trackId}
+                        >
+                          <img
+                            src={song.artworkUrl100}
+                            alt=""
+                            className="music-result-artwork"
+                          />
+
+                          <div className="music-result-info">
+                            <strong>{song.trackName}</strong>
+
+                            <span>{song.artistName}</span>
+
+                            <small>{song.collectionName}</small>
+                          </div>
+
+                          <button
+                            type="button"
+                            className="music-preview-button"
+                            onClick={() =>
+                              handleToggleMusicPreview({
+                                id: song.trackId,
+                                previewUrl: song.previewUrl,
+                              })
+                            }
+                          >
+                            {playingMusicId === song.trackId
+                              ? "⏸"
+                              : "▶"}
+                          </button>
+
+                          <button
+                            type="button"
+                            className="music-select-button"
+                            onClick={() => {
+                              setSelectedMusic({
+                                id: song.trackId,
+                                title: song.trackName,
+                                artist: song.artistName,
+                                album: song.collectionName,
+                                artwork: song.artworkUrl100,
+                                previewUrl: song.previewUrl,
+                                trackUrl: song.trackViewUrl,
+                              });
+
+                              setPlayingMusicId(null);
+                              setMusicOpen(false);
+                            }}
+                          >
+                            Add
+                          </button>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
 
@@ -1196,28 +1513,122 @@ function CreatePost() {
 
         {selectedMusic && (
           <div className="selected-music-card">
-            <img
-              src={selectedMusic.artwork}
-              alt=""
-              className="selected-music-artwork"
+            <div className="selected-music-top">
+              <img
+                src={selectedMusic.artwork}
+                alt=""
+                className="selected-music-artwork"
+              />
+
+              <div className="selected-music-info">
+                <span>ADDED MUSIC</span>
+                <strong>{selectedMusic.title}</strong>
+                <p>{selectedMusic.artist}</p>
+              </div>
+
+              <button
+                type="button"
+                className="selected-music-remove"
+                onClick={() => {
+                  audioRef.current?.pause();
+                  audioRef.current = null;
+                  setSelectedMusic(null);
+                  setPlayingMusicId(null);
+                  setMusicCurrentTime(0);
+                  setMusicDuration(0);
+                }}
+                aria-label="Remove music"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="selected-music-controls">
+              <button
+                type="button"
+                className="music-skip-button"
+                onClick={() => {
+                  if (!audioRef.current) return;
+
+                  audioRef.current.currentTime = Math.max(
+                    0,
+                    audioRef.current.currentTime - 10
+                  );
+                }}
+              >
+                ↶10
+              </button>
+
+              <button
+                type="button"
+                className="music-main-play"
+                onClick={() => handleToggleMusicPreview(selectedMusic)}
+                aria-label={
+                  playingMusicId === selectedMusic.id
+                    ? "Pause music"
+                    : "Play music"
+                }
+              >
+                {playingMusicId === selectedMusic.id ? "Ⅱ" : "▶"}
+              </button>
+
+              <button
+                type="button"
+                className="music-skip-button"
+                onClick={() => {
+                  if (!audioRef.current) return;
+
+                  audioRef.current.currentTime = Math.min(
+                    audioRef.current.duration || musicDuration,
+                    audioRef.current.currentTime + 10
+                  );
+                }}
+              >
+                10↷
+              </button>
+            </div>
+
+            <input
+              type="range"
+              className="selected-music-progress"
+              min="0"
+              max={musicDuration || 0}
+              step="0.1"
+              value={Math.min(musicCurrentTime, musicDuration || 0)}
+              onChange={(e) => {
+                const time = Number(e.target.value);
+
+                setMusicCurrentTime(time);
+
+                if (audioRef.current) {
+                  audioRef.current.currentTime = time;
+                }
+              }}
             />
 
-            <div className="selected-music-info">
-              <span>ADDED MUSIC</span>
-              <strong>{selectedMusic.title}</strong>
-              <p>{selectedMusic.artist}</p>
+            <div className="selected-music-time">
+              <span>
+                {formatMusicTime(musicCurrentTime)}
+              </span>
+
+              <span>
+                {formatMusicTime(musicDuration)}
+              </span>
             </div>
 
             <button
               type="button"
-              className="selected-music-remove"
+              className="selected-music-change"
               onClick={() => {
-                setSelectedMusic(null);
+                audioRef.current?.pause();
+                audioRef.current = null;
                 setPlayingMusicId(null);
+                setMusicCurrentTime(0);
+                setMusicDuration(0);
+                setMusicOpen(true);
               }}
-              aria-label="Remove music"
             >
-              ×
+              Change music
             </button>
           </div>
         )}

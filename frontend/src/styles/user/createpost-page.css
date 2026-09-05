@@ -1716,19 +1716,25 @@
 
 /* SELECTED MUSIC */
 
-.selected-music-card {
+.create-post-page .selected-music-card {
   display: flex;
-  align-items: center;
-  gap: 14px;
+  flex-direction: column;
   margin-top: -10px;
   margin-bottom: 24px;
-  padding: 12px;
+  padding: 14px;
   border: 1px solid rgba(139, 92, 246, 0.3);
   border-radius: 16px;
   background: rgba(124, 58, 237, 0.08);
 }
 
-.selected-music-artwork {
+.create-post-page .selected-music-top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+}
+
+.create-post-page .selected-music-artwork {
   width: 58px;
   height: 58px;
   flex: 0 0 58px;
@@ -1736,7 +1742,7 @@
   border-radius: 10px;
 }
 
-.selected-music-info {
+.create-post-page .selected-music-info {
   min-width: 0;
   flex: 1;
   display: flex;
@@ -1744,14 +1750,14 @@
   gap: 3px;
 }
 
-.selected-music-info span {
+.create-post-page .selected-music-info span {
   color: #a78bfa;
   font-size: 9px;
   font-weight: 800;
   letter-spacing: 1.2px;
 }
 
-.selected-music-info strong {
+.create-post-page .selected-music-info strong {
   color: #f5f3ff;
   font-size: 14px;
   white-space: nowrap;
@@ -1759,13 +1765,13 @@
   text-overflow: ellipsis;
 }
 
-.selected-music-info p {
+.create-post-page .selected-music-info p {
   margin: 0;
   color: #918da2;
   font-size: 12px;
 }
 
-.selected-music-remove {
+.create-post-page .selected-music-remove {
   width: 32px;
   height: 32px;
   flex: 0 0 32px;
@@ -1779,12 +1785,89 @@
   transition: 0.2s ease;
 }
 
-.selected-music-remove:hover {
+.create-post-page .selected-music-remove:hover {
   background: rgba(220, 38, 38, 0.2);
   border-color: rgba(248, 113, 113, 0.4);
   color: #ffffff;
 }
 
+.create-post-page .selected-music-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 14px;
+}
+
+.create-post-page .music-skip-button {
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.52);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.create-post-page .music-skip-button:hover {
+  color: #a78bfa;
+}
+
+.create-post-page .music-main-play {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(167, 139, 250, 0.12);
+  border-radius: 50%;
+  background: rgba(167, 139, 250, 0.18);
+  color: #ffffff;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(124, 58, 237, 0.12);
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.create-post-page .music-main-play:hover {
+  background: rgba(167, 139, 250, 0.28);
+  transform: scale(1.04);
+  box-shadow: 0 8px 22px rgba(124, 58, 237, 0.18);
+}
+
+.create-post-page .selected-music-progress {
+  width: 100%;
+  height: 5px;
+  margin-top: 12px;
+  accent-color: #a78bfa;
+  cursor: pointer;
+}
+
+.create-post-page .selected-music-time {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2px;
+  color: rgba(255, 255, 255, 0.42);
+  font-size: 10px;
+}
+
+.create-post-page .selected-music-change {
+  align-self: flex-start;
+  margin-top: 10px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #a78bfa;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.create-post-page .selected-music-change:hover {
+  color: #c4b5fd;
+}
 /* ACTIONS */
 
 .music-modal-actions {
@@ -1879,4 +1962,164 @@
   object-fit: contain;
   display: block;
   flex-shrink: 0;
+}
+
+/* =========================
+   MUSIC QUICK PICKS
+========================= */
+
+.create-post-page .music-quick-picks {
+  margin-top: 14px;
+}
+
+.create-post-page .music-quick-picks .music-section-heading {
+  margin-bottom: 10px;
+}
+
+.create-post-page .music-quick-picks .music-section-eyebrow {
+  display: block;
+  margin-bottom: 3px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  color: #a78bfa;
+}
+
+.create-post-page .music-quick-picks .music-section-heading h4 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #f8f7ff;
+}
+
+.create-post-page .music-quick-picks .music-section-heading p {
+  margin: 3px 0 0;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.48);
+}
+
+.create-post-page .music-quick-picks-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.create-post-page .music-quick-picks-list button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 7px 12px;
+  border: 1px solid rgba(167, 139, 250, 0.22);
+  border-radius: 999px;
+  background: rgba(124, 58, 237, 0.08);
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.create-post-page .music-quick-picks-list button:hover {
+  background: rgba(124, 58, 237, 0.18);
+  border-color: rgba(167, 139, 250, 0.48);
+  transform: translateY(-1px);
+}
+
+.create-post-page .music-quick-picks-list button:active {
+  transform: translateY(0);
+}
+
+/* =========================
+   MUSIC BACK BUTTON
+========================= */
+
+.create-post-page .music-back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 7px 11px;
+  border: 1px solid rgba(167, 139, 250, 0.22);
+  border-radius: 999px;
+  background: rgba(124, 58, 237, 0.08);
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.create-post-page .music-back-button:hover {
+  background: rgba(124, 58, 237, 0.18);
+  border-color: rgba(167, 139, 250, 0.45);
+  color: #fff;
+  transform: translateX(-2px);
+}
+
+/* =========================
+   MUSIC RECOMMENDATIONS HEADING
+========================= */
+
+.create-post-page .music-suggestions-section {
+  margin-top: 18px;
+}
+
+.create-post-page .music-suggestions-section .music-section-heading {
+  margin-bottom: 12px;
+}
+
+.create-post-page .music-suggestions-section .music-section-eyebrow {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 1.5px;
+  color: #a78bfa;
+  text-transform: uppercase;
+}
+
+.create-post-page .music-suggestions-section .music-section-heading h4 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #f8f7ff;
+}
+
+.create-post-page .music-suggestions-section .music-section-heading p {
+  margin: 5px 0 0;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.48);
+}
+
+@media (max-width: 520px) {
+  .create-post-page .selected-music-card {
+    padding: 12px;
+  }
+
+  .create-post-page .selected-music-artwork {
+    width: 52px;
+    height: 52px;
+    flex-basis: 52px;
+  }
+
+  .create-post-page .selected-music-info strong {
+    font-size: 13px;
+  }
+
+  .create-post-page .selected-music-controls {
+    gap: 16px;
+  }
 }
