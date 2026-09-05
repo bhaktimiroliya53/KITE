@@ -14,6 +14,7 @@ import "../../styles/user/feed.css";
 import "../../styles/user/createpost.css";
 import "../../styles/user/postcard.css";
 import { FiRepeat } from "react-icons/fi";
+import { FaPlay, FaPause } from "react-icons/fa";
 
 
 function Home() {
@@ -36,6 +37,7 @@ function Home() {
   const [showEmoji, setShowEmoji] = useState(false);
   const [showCommentEmoji, setShowCommentEmoji] = useState(false);
   const [isPosting, setIsPosting] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(null);
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "dark");
   const [heartPosition, setHeartPosition] = useState(null);
   const [replyingTo, setReplyingTo] = useState(null);
@@ -47,8 +49,50 @@ function Home() {
   const [shareComment, setShareComment] = useState(null);
   const [allUsers, setAllUsers] = useState([]);
   const [commentRepostAnimation, setCommentRepostAnimation] = useState(null);
+  const [viewImage, setViewImage] = useState(null);
+  const imageClickTimer = useRef(null);
+  const [playingPostId, setPlayingPostId] = useState(null);
+  const audioRef = useRef(null);
 
   const emojiRef = useRef(null);
+
+  const handleMusicToggle = async (post) => {
+    if (!post.music?.previewUrl) return;
+
+    try {
+      // Stop currently playing song
+      if (
+        playingPostId === post._id &&
+        audioRef.current
+      ) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+        setPlayingPostId(null);
+        return;
+      }
+
+      // Stop previous song
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
+
+      const audio = new Audio(post.music.previewUrl);
+      audioRef.current = audio;
+
+      audio.onended = () => {
+        setPlayingPostId(null);
+        audioRef.current = null;
+      };
+
+      setPlayingPostId(post._id);
+
+      await audio.play();
+    } catch (error) {
+      console.error("MUSIC PLAY ERROR =>", error);
+      setPlayingPostId(null);
+    }
+  };
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -86,6 +130,28 @@ function Home() {
   };
   useEffect(() => {
     fetchPosts();
+  }, []);
+
+  useEffect(() => {
+    const handleUploadProgress = (event) => {
+      setUploadProgress(event.detail);
+
+      if (event.detail.status === "complete") {
+        fetchPosts();
+      }
+    };
+
+    window.addEventListener(
+      "kite-upload-progress",
+      handleUploadProgress
+    );
+
+    return () => {
+      window.removeEventListener(
+        "kite-upload-progress",
+        handleUploadProgress
+      );
+    };
   }, []);
 
   const fetchUsers = async () => {
@@ -490,25 +556,48 @@ function Home() {
           {/* FEED */}
 
           <main className="feed">
+
+            {uploadProgress &&
+              uploadProgress.status !== "hidden" &&
+              uploadProgress.status !== "complete" &&
+              uploadProgress.status !== "error" && (
+                <div className="kite-upload-progress">
+                  <div
+                    className="kite-upload-progress-bar"
+                    style={{
+                      width: `${uploadProgress.progress || 0}%`,
+                    }}
+                  />
+                </div>
+              )}
+
             {/* CREATE POST */}
 
-            <div
-              className="create-post"
-              onClick={() => setShowModal(true)}
-            >
+            <div className="create-post">
               <img
                 className="create-post-avatar"
                 src={user?.avatar || "https://i.pravatar.cc/150"}
                 alt="profile"
               />
 
-              <div className="create-post-input">
-                <span>What's on your mind, {user?.name || "User"}?</span>
+              <div
+                className="create-post-input"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setShowModal(true);
+                }}
+              >
+                <span>
+                  What's on your mind, {user?.name || "User"}?
+                </span>
               </div>
 
               <button
+                type="button"
                 className="create-post-btn"
                 onClick={(e) => {
+                  e.preventDefault();
                   e.stopPropagation();
                   setShowModal(true);
                 }}
@@ -597,15 +686,78 @@ function Home() {
                           <span>•</span>
 
                           <span>
-                            2h ago
+                            {(() => {
+                              const createdAt = new Date(post.createdAt);
+                              const now = new Date();
+                              const diffMs = now - createdAt;
+
+                              const seconds = Math.floor(diffMs / 1000);
+                              const minutes = Math.floor(seconds / 60);
+                              const hours = Math.floor(minutes / 60);
+                              const days = Math.floor(hours / 24);
+
+                              if (seconds < 60) return "Just now";
+                              if (minutes < 60) return `${minutes}m ago`;
+                              if (hours < 24) return `${hours}h ago`;
+                              if (days < 7) return `${days}d ago`;
+
+                              return createdAt.toLocaleDateString("en-IN", {
+                                day: "numeric",
+                                month: "short",
+                              });
+                            })()}
                           </span>
+
+                          {(post.location?.name || post.location?.address) && (
+                            <>
+                              <span>•</span>
+                              <span className="post-location">
+                                📍 {post.location.name || post.location.address}
+                              </span>
+                            </>
+                          )}
 
                         </div>
 
                       </div>
 
                     </div>
+                    {post.music?.previewUrl && (
+                      <div className="post-music">
+                        <button
+                          type="button"
+                          className="post-music-play"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleMusicToggle(post);
+                          }}
+                        >
+                          {playingPostId === post._id ? (
+                            <FaPause />
+                          ) : (
+                            <FaPlay />
+                          )}
+                        </button>
 
+                        <div className="post-music-info">
+                          <div className="post-music-title">
+                            {post.music.title || "Unknown song"}
+                          </div>
+
+                          <div className="post-music-artist">
+                            {post.music.artist || "Unknown artist"}
+                          </div>
+                        </div>
+
+                        {post.music.artwork && (
+                          <img
+                            src={post.music.artwork}
+                            alt=""
+                            className="post-music-artwork"
+                          />
+                        )}
+                      </div>
+                    )}
 
                     <button
                       className="post-more-btn"
@@ -630,8 +782,20 @@ function Home() {
                   {post.image && (
                     <div
                       className="image-wrapper"
+                      onClick={(e) => {
+                        e.stopPropagation();
+
+                        imageClickTimer.current = setTimeout(() => {
+                          setViewImage(post.image);
+                        }, 220);
+                      }}
                       onDoubleClick={(e) => {
                         e.stopPropagation();
+
+                        if (imageClickTimer.current) {
+                          clearTimeout(imageClickTimer.current);
+                        }
+
                         handleDoubleLike(post._id, e);
                       }}
                     >
@@ -1437,6 +1601,26 @@ function Home() {
               <p>No reposts yet</p>
             )}
           </div>
+        </div>
+      )}
+      {viewImage && (
+        <div
+          className="image-viewer-overlay"
+          onClick={() => setViewImage(null)}
+        >
+          <button
+            className="image-viewer-close"
+            onClick={() => setViewImage(null)}
+          >
+            ×
+          </button>
+
+          <img
+            src={viewImage}
+            alt="Full size"
+            className="image-viewer-image"
+            onClick={(e) => e.stopPropagation()}
+          />
         </div>
       )}
     </div>

@@ -14,6 +14,8 @@ import Explore from "./pages/Explore/Explore";
 import Chat from "./pages/Chat/Chat";
 import PostView from "./pages/PostView/PostView";
 import Support from "./pages/Support/Support";
+import Create from "./pages/Create/Create"; 
+import CreatePost from "./components/user/CreatePost/CreatePost";
 
 import AdminDashboard from "./pages/Admin/AdminDashboard";
 
@@ -41,6 +43,8 @@ function App() {
         <Route path="/chat/:userId" element={<Chat />} />
         <Route path="/post/:id" element={<PostView />} />
         <Route path="/support" element={<Support />} />
+        <Route path="/create" element={<Create />} />
+        <Route path="/create-post" element={<CreatePost />} />
 
         {/* Admin */}
         <Route path="/admin" element={<AdminDashboard />} />

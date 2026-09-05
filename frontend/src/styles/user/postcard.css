@@ -210,17 +210,12 @@
 
 
 .post-image {
-
   width: 100%;
-
   max-height: 620px;
-
-  object-fit: cover;
-
+  height: auto;
+  object-fit: contain;
   display: block;
-
   border-radius: 20px;
-
 }
 
 
