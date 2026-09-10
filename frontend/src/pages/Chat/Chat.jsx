@@ -175,7 +175,7 @@ function Chat() {
 
         imageUrl = cloudData.secure_url;
       }
-console.log("SENDING GIF =>", selectedGif);
+      console.log("SENDING GIF =>", selectedGif);
 
       await API.post("/messages", {
         senderId: currentUser._id,
@@ -308,38 +308,37 @@ console.log("SENDING GIF =>", selectedGif);
         </button>
 
 
-        <div className="chat-user-box">
+        <div
+  className="chat-user-box"
+  onClick={() => navigate(`/user/${userId}`)}
+  style={{ cursor: "pointer" }}
+>
 
-          <div className="chat-avatar-wrapper">
+  <div className="chat-avatar-wrapper">
+    <img
+      src={
+        user.avatar ||
+        user.profilePic ||
+        "https://i.pravatar.cc/100"
+      }
+      alt=""
+      className="chat-avatar"
+    />
 
-            <img
-              src={
-                user.avatar ||
-                user.profilePic ||
-                "https://i.pravatar.cc/100"
-              }
-              alt=""
-              className="chat-avatar"
-            />
+    <span className="chat-online-dot"></span>
+  </div>
 
-            <span className="chat-online-dot"></span>
+  <div className="chat-user-info">
+    <h3>
+      {user.username}
+    </h3>
 
-          </div>
+    <span>
+      🟢 Online
+    </span>
+  </div>
 
-
-          <div className="chat-user-info">
-
-            <h3>
-              {user.username}
-            </h3>
-
-            <span>
-              🟢 Online
-            </span>
-
-          </div>
-
-        </div>
+</div>
 
 
         <button className="chat-more-btn">
@@ -709,13 +708,13 @@ console.log("SENDING GIF =>", selectedGif);
           htmlFor="chatImage"
           className="image-btn"
         >
-          ➕ 
+          ➕
         </label>
 
         {/* Message Input */}
 
-        <input
-          type="text"
+        <textarea
+          className="message-input"
           placeholder={
             editMessage
               ? "Edit message..."
@@ -729,14 +728,25 @@ console.log("SENDING GIF =>", selectedGif);
           }
 
           onChange={(e) => {
-
             if (editMessage) {
               setEditText(e.target.value);
-            }
-            else {
+            } else {
               setMessage(e.target.value);
             }
+          }}
 
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+
+              if (editMessage) {
+                updateMessage();
+              } else {
+                sendMessage();
+              }
+            }
+
+            // Shift + Enter = new line
           }}
         />
 
@@ -745,24 +755,29 @@ console.log("SENDING GIF =>", selectedGif);
         <button
           className="send-btn"
           onClick={() => {
-
             if (editMessage) {
-
               updateMessage();
+            } else {
+              const button = document.querySelector(".send-btn");
 
+              if (button) {
+                button.classList.add("send-btn-pressed");
+
+                setTimeout(() => {
+                  button.classList.remove("send-btn-pressed");
+                }, 140);
+              }
+
+              setTimeout(() => {
+                sendMessage();
+              }, 100);
             }
-            else {
-
-              sendMessage();
-
-            }
-
           }}
         >
           {
             editMessage
               ? "✓"
-              : "₹"
+              : "➤"
           }
 
         </button>

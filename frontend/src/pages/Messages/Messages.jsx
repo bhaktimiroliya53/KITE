@@ -79,7 +79,7 @@ function Messages() {
           <div className="connect-title">
 
             <button
-              className="back-btn"
+              className="connect-back-btn"
               onClick={() => navigate("/home")}
             >
               <FaArrowLeft />

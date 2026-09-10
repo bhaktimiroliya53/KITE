@@ -348,19 +348,59 @@
   font-size: 22px;
 }
 
-
-
 /* BACK BUTTON */
 
-.back-btn {
-  background: transparent;
-  border: none;
-  color: white;
-  font-size: 18px;
+.chat-header .back-btn {
+  position: static !important;
+
+  width: 42px !important;
+  min-width: 42px !important;
+  max-width: 42px !important;
+
+  height: 42px !important;
+  min-height: 42px !important;
+  max-height: 42px !important;
+
+  flex: 0 0 42px !important;
+
+  padding: 0 !important;
+  margin: 0 !important;
+
+  box-sizing: border-box !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  border: 1px solid rgba(255,255,255,0.12) !important;
+  border-radius: 12px !important;
+
+  background: rgba(31,36,56,0.75) !important;
+  color: white !important;
+
+  font-size: 18px !important;
+
   cursor: pointer;
+
+  z-index: 5;
+
+  backdrop-filter: blur(10px);
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
+.chat-header .back-btn:hover {
+  background: rgba(124,58,237,0.8) !important;
+  transform: translateX(-2px);
+  box-shadow: 0 6px 22px rgba(124,58,237,0.3);
+}
 
+.chat-header .back-btn:active {
+  transform: translateX(-2px) scale(0.94);
+}
 
 /* USER ITEM */
 
@@ -521,11 +561,14 @@
 }
 
 
-.chat-user-box{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  margin-left:15px;
+.chat-header .chat-user-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  margin-left: 0 !important;
+
+  position: static !important;
 }
 
 
@@ -746,6 +789,10 @@ font-size:13px;
 
 }
 
+.chat-header {
+  gap: 60px;
+}
+
 /* ===============================
    BIG EMOJI PICKER UI
 ================================ */
@@ -892,4 +939,49 @@ font-size:13px;
 
   border-radius:20px;
 
+}
+
+.connect-back-btn {
+  width: 48px;
+  height: 48px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin: 0;
+  padding: 0;
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+
+  background: rgba(31, 36, 56, 0.75);
+  color: #ffffff;
+
+  font-size: 20px;
+  cursor: pointer;
+
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+
+  backdrop-filter: blur(12px);
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.connect-back-btn:hover {
+  background: rgba(124, 58, 237, 0.85);
+
+  transform: translateX(-2px);
+
+  box-shadow:
+    0 8px 28px rgba(124, 58, 237, 0.35);
+}
+
+.connect-back-btn:active {
+  transform: translateX(-2px) scale(0.94);
 }
