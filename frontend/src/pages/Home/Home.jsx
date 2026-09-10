@@ -30,6 +30,7 @@ function Home() {
   const [commentText, setCommentText] = useState("");
   const [selectedPost, setSelectedPost] = useState(null);
   const [menuOpen, setMenuOpen] = useState(null);
+  const [deletingPostId, setDeletingPostId] = useState(null);
   const [showLikes, setShowLikes] = useState(null);
   const [animatingPost, setAnimatingPost] = useState(null);
   const [showReposts, setShowReposts] = useState(null);
@@ -294,11 +295,32 @@ function Home() {
     console.log("DELETE ID =", id);
 
     try {
+      setDeletingPostId(id);
+
       await API.delete(`/posts/${id}`);
 
+      await new Promise((resolve) => setTimeout(resolve, 700));
+
+      setMenuOpen(null);
       fetchPosts();
     } catch (error) {
-      console.log(error);
+      console.log("DELETE POST ERROR =>", error);
+      setMenuOpen(null);
+    } finally {
+      setDeletingPostId(null);
+    }
+  };
+
+  const handleCopyLink = async (postId) => {
+    try {
+      const link = `${window.location.origin}/post/${postId}`;
+
+      await navigator.clipboard.writeText(link);
+
+      setMenuOpen(null);
+      alert("Post link copied!");
+    } catch (error) {
+      console.log("COPY LINK ERROR =>", error);
     }
   };
 
@@ -942,12 +964,95 @@ function Home() {
                         className="delete-sheet"
                         onClick={(e) => e.stopPropagation()}
                       >
-                        <button
-                          className="delete-sheet-btn"
-                          onClick={() => handleDelete(post._id)}
-                        >
-                          🗑 Delete
-                        </button>
+                        {String(post.userId?._id || post.userId) ===
+                          String(user._id) ? (
+                          <>
+                            <button
+                              className="delete-sheet-btn"
+                              onClick={() => {
+                                setMenuOpen(null);
+                                navigate(`/create-post?mode=edit&postId=${post._id}`);
+                              }}
+                            >
+                              ✏️ Edit
+                            </button>
+
+                            <button
+                              className="delete-sheet-btn"
+                              onClick={() => handleCopyLink(post._id)}
+                            >
+                              🔗 Copy Link
+                            </button>
+
+                            <button
+                              className="delete-sheet-btn"
+                              onClick={() => handleDelete(post._id)}
+                              disabled={deletingPostId === post._id}
+                            >
+                              {deletingPostId === post._id
+                                ? "⏳ Deleting..."
+                                : "🗑 Delete"}
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <button
+                              className="delete-sheet-btn"
+                              onClick={() => handleSave(post._id)}
+                            >
+                              {isSaved ? "🔖 Unsave" : "🔖 Save"}
+                            </button>
+
+                            <button
+                              className="delete-sheet-btn"
+                              onClick={() => handleCopyLink(post._id)}
+                            >
+                              🔗 Copy Link
+                            </button>
+
+                            <button
+                              className="delete-sheet-btn"
+                              onClick={async () => {
+                                try {
+                                  await API.post(`/posts/report/${post._id}`, {
+                                    reporterId: user._id,
+                                    reason: "",
+                                  });
+
+                                  setMenuOpen(null);
+                                  alert("Post reported successfully.");
+                                } catch (error) {
+                                  console.log("REPORT POST ERROR =>", error);
+
+                                  alert(
+                                    error.response?.data?.message ||
+                                    "Unable to report this post."
+                                  );
+                                }
+                              }}
+                            >
+                              🚩 Report
+                            </button>
+
+                            <button
+                              className="delete-sheet-btn"
+                              onClick={() => {
+                                alert("Not Interested coming next.");
+                              }}
+                            >
+                              🚫 Not Interested
+                            </button>
+
+                            <button
+                              className="delete-sheet-btn"
+                              onClick={() => {
+                                alert("Mute User coming next.");
+                              }}
+                            >
+                              🔇 Mute User
+                            </button>
+                          </>
+                        )}
                       </div>
                     </div>
                   )}

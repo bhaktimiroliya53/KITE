@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import Cropper from "react-easy-crop";
 import "../../../styles/user/createpost-page.css";
 import API from "../../../services/api";
@@ -9,6 +10,9 @@ import { uploadPostImage } from "../../../services/uploadManager";
 
 function CreatePost() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const isEditMode = searchParams.get("mode") === "edit";
+  const editPostId = searchParams.get("postId");
 
   const [caption, setCaption] = useState("");
   const [imageUrl, setImageUrl] = useState("");
@@ -143,6 +147,11 @@ function CreatePost() {
 
 
   useEffect(() => {
+    if (isEditMode) {
+      setDraftReady(true);
+      return;
+    }
+
     const savedDraft = localStorage.getItem("kite_create_draft");
 
     if (!savedDraft) {
@@ -171,6 +180,48 @@ function CreatePost() {
     setDraftReady(true);
   }, []);
 
+  useEffect(() => {
+    if (!isEditMode || !editPostId) return;
+
+    const loadEditPost = async () => {
+      try {
+        const user = JSON.parse(localStorage.getItem("user"));
+
+        if (!user?._id) {
+          console.error("EDIT USER NOT FOUND");
+          return;
+        }
+
+        const response = await API.get(`/posts?userId=${user._id}`);
+
+        const posts = Array.isArray(response.data)
+          ? response.data
+          : response.data.posts || [];
+
+        const post = posts.find(
+          (item) => String(item._id) === String(editPostId)
+        );
+
+        if (!post) {
+          console.error("EDIT POST NOT FOUND");
+          return;
+        }
+
+        setCaption(post.content || "");
+        setImageUrl(post.image || "");
+        setTaggedPeople(post.taggedPeople || []);
+        setAudience(post.audience || "everyone");
+        setMood(post.mood || "");
+        setLocation(post.location || null);
+        setSelectedMusic(post.music || null);
+      } catch (error) {
+        console.error("LOAD EDIT POST ERROR =>", error);
+      }
+    };
+
+    loadEditPost();
+  }, [isEditMode, editPostId]);
+
 
   useEffect(() => {
     if (!tagPeopleOpen) return;
@@ -194,7 +245,7 @@ function CreatePost() {
 
 
   useEffect(() => {
-    if (!draftReady) return;
+    if (!draftReady || isEditMode) return;
 
     const draft = {
       caption,
@@ -531,16 +582,15 @@ function CreatePost() {
   }, [musicOpen]);
 
   const formatMusicTime = (time) => {
-  if (!Number.isFinite(time) || time < 0) {
-    return "0:00";
-  }
+    if (!Number.isFinite(time) || time < 0) {
+      return "0:00";
+    }
 
-  const minutes = Math.floor(time / 60);
-  const seconds = Math.floor(time % 60);
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
 
-  return `${minutes}:${String(seconds).padStart(2, "0")}`;
-};
-
+    return `${minutes}:${String(seconds).padStart(2, "0")}`;
+  };
   const handleToggleMusicPreview = (song) => {
     if (!song?.previewUrl) return;
 
@@ -604,6 +654,20 @@ function CreatePost() {
       setIsPosting(true);
 
       const user = JSON.parse(localStorage.getItem("user"));
+      if (isEditMode) {
+        await API.put(`/posts/edit/${editPostId}`, {
+          userId: user._id,
+          content: caption.trim(),
+          taggedPeople: taggedPeople.map((person) => person._id),
+          audience,
+          mood,
+          location,
+          music: selectedMusic,
+        });
+
+        navigate("/home");
+        return;
+      }
 
       if (!user?._id) {
         alert("Please login again.");
@@ -678,9 +742,19 @@ function CreatePost() {
           </button>
 
           <div>
-            <span className="moment-eyebrow">KITE MOMENT</span>
-            <h2>Create a moment</h2>
-            <p>Share something worth remembering.</p>
+            <span className="moment-eyebrow">
+              {isEditMode ? "EDIT MOMENT" : "KITE MOMENT"}
+            </span>
+
+            <h2>
+              {isEditMode ? "Edit your moment" : "Create a moment"}
+            </h2>
+
+            <p>
+              {isEditMode
+                ? "Update your moment details without changing the original media."
+                : "Share something worth remembering."}
+            </p>
             {draftSaved && (
               <span className="draft-saved-indicator">
                 ✓ Draft saved
@@ -690,695 +764,811 @@ function CreatePost() {
         </div>
 
         {/* CAPTION */}
-        <div className="moment-caption-section">
-          <div className="moment-label-row">
-            <label className="moment-section-label">
-              WHAT'S ON YOUR MIND?
-            </label>
 
-            <span className="caption-counter">
-              {caption.length}/500
-            </span>
-          </div>
+        <div className="create-edit-layout">
+          <section className="create-section">
+            <div className="moment-caption-section">
+              <div className="moment-label-row">
+                <label className="moment-section-label">
+                  WHAT'S ON YOUR MIND?
+                </label>
 
-          <textarea
-            placeholder="Share a thought, feeling, idea or moment..."
-            value={caption}
-            maxLength={500}
-            onChange={(e) => setCaption(e.target.value)}
-            autoFocus
-          />
-        </div>
+                <span className="caption-counter">
+                  {caption.length}/500
+                </span>
+              </div>
 
-        {/* MEDIA AREA */}
-
-        {previewUrl ? (
-          <div className="moment-preview-wrapper">
-            <Cropper
-              image={previewUrl}
-              crop={crop}
-              zoom={zoom}
-              rotation={rotation}
-              aspect={aspectRatio}
-              onCropChange={setCrop}
-              onZoomChange={setZoom}
-              onRotationChange={setRotation}
-              onCropComplete={onCropComplete}
-            />
-
-            <button
-              className="moment-remove-image"
-              onClick={removeImage}
-              type="button"
-            >
-              ×
-            </button>
-
-            <label className="change-image-button">
-              Change image
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                hidden
+              <textarea
+                placeholder="Share a thought, feeling, idea or moment..."
+                value={caption}
+                maxLength={500}
+                onChange={(e) => setCaption(e.target.value)}
+                autoFocus
               />
-            </label>
-          </div>
-        ) : (
-          <label className="moment-upload-area">
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              hidden
-            />
-
-            <div className="upload-icon">＋</div>
-
-            <h3>Add a photo</h3>
-
-            <p>
-              Add an image to make your moment visual
-              <br />
-              or simply continue with text.
-            </p>
-
-            <span className="upload-hint">
-              JPG, PNG, WEBP • Up to 10 MB
-            </span>
-          </label>
-        )}
-
-        <div className="moment-edit-controls">
-
-          <div className="edit-control">
-            <div className="edit-control-header">
-              <span>Zoom</span>
-              <span>{zoom.toFixed(1)}×</span>
             </div>
 
-            <div className="edit-slider-row">
-              <button
-                type="button"
-                className="edit-small-button"
-                onClick={() =>
-                  setZoom((value) => Math.max(1, Number((value - 0.1).toFixed(1))))
-                }
+            {/* MEDIA AREA */}
+
+            {isEditMode && previewUrl && (
+              <div className="edit-media-lock">
+                🔒 Original media — cannot be changed
+              </div>
+            )}
+
+            {previewUrl ? (
+              <div
+                className="moment-preview-wrapper"
+                style={{
+                  pointerEvents: isEditMode ? "none" : "auto",
+                }}
               >
-                −
-              </button>
-
-              <input
-                type="range"
-                min="1"
-                max="3"
-                step="0.1"
-                value={zoom}
-                onChange={(e) => setZoom(Number(e.target.value))}
-              />
-
-              <button
-                type="button"
-                className="edit-small-button"
-                onClick={() =>
-                  setZoom((value) => Math.min(3, Number((value + 0.1).toFixed(1))))
-                }
-              >
-                +
-              </button>
-            </div>
-          </div>
-
-          <div className="edit-control">
-            <div className="edit-control-header">
-              <span>Rotation</span>
-              <span>{rotation}°</span>
-            </div>
-
-            <div className="edit-slider-row">
-              <button
-                type="button"
-                className="edit-small-button"
-                onClick={() =>
-                  setRotation((value) => Math.max(-180, value - 5))
-                }
-              >
-                ↶
-              </button>
-
-              <input
-                type="range"
-                min="-180"
-                max="180"
-                step="1"
-                value={rotation}
-                onChange={(e) => setRotation(Number(e.target.value))}
-              />
-
-              <button
-                type="button"
-                className="edit-small-button"
-                onClick={() =>
-                  setRotation((value) => Math.min(180, value + 5))
-                }
-              >
-                ↷
-              </button>
-            </div>
-          </div>
-
-          <div className="edit-quick-tools">
-            <button
-              type="button"
-              onClick={() =>
-                setRotation((value) => (value - 90 < -180 ? 180 : value - 90))
-              }
-            >
-              ↶ 90°
-            </button>
-
-            <button
-              type="button"
-              onClick={() =>
-                setRotation((value) => (value + 90 > 180 ? -180 : value + 90))
-              }
-            >
-              ↷ 90°
-            </button>
-          </div>
-
-          <button
-            type="button"
-            className="reset-edit-button"
-            onClick={() => {
-              setCrop({ x: 0, y: 0 });
-              setZoom(1);
-              setRotation(0);
-            }}
-          >
-            Reset
-          </button>
-
-        </div>
-
-        <div className="aspect-ratio-controls">
-          <button
-            type="button"
-            className={aspectRatio === 4 / 5 ? "active" : ""}
-            onClick={() => setAspectRatio(4 / 5)}
-          >
-            4:5
-          </button>
-
-          <button
-            type="button"
-            className={aspectRatio === 1 ? "active" : ""}
-            onClick={() => setAspectRatio(1)}
-          >
-            1:1
-          </button>
-
-          <button
-            type="button"
-            className={aspectRatio === 16 / 9 ? "active" : ""}
-            onClick={() => setAspectRatio(16 / 9)}
-          >
-            16:9
-          </button>
-        </div>
-
-        {/* IMAGE URL */}
-        <div className="moment-url-section">
-          <button
-            type="button"
-            className="url-toggle"
-            onClick={() => {
-              setImage(null);
-              setPreviewUrl("");
-            }}
-          >
-            Or use an image URL
-          </button>
-
-          <input
-            type="text"
-            placeholder="Paste image URL..."
-            value={imageUrl}
-            onChange={(e) => {
-              setImageUrl(e.target.value);
-              setImage(null);
-            }}
-          />
-        </div>
-
-
-
-        {/* new TOOLS */}
-        <div className="moment-tools">
-          <div className="mood-selector">
-            <button
-              type="button"
-              onClick={() => setMoodOpen((value) => !value)}
-            >
-              <span>{mood ? mood.split(" ")[0] : "✨"}</span>
-              {mood ? mood.substring(mood.indexOf(" ") + 1) : "Mood"}
-            </button>
-
-            {moodOpen && (
-              <div className="mood-menu">
-                {[
-                  "😊 Happy",
-                  "😎 Chill",
-                  "❤️ Loved",
-                  "🔥 Excited",
-                  "😌 Peaceful",
-                  "🤔 Thoughtful",
-                  "🥳 Celebrating",
-                  "💪 Motivated",
-                ].map((item) => (
-                  <button
-                    type="button"
-                    key={item}
-                    className={mood === item ? "selected" : ""}
-                    onClick={() => {
-                      setMood(item);
-                      setMoodOpen(false);
-                    }}
-                  >
-                    {item}
-                  </button>
-                ))}
+                <Cropper
+                  image={previewUrl}
+                  crop={crop}
+                  zoom={zoom}
+                  rotation={rotation}
+                  aspect={aspectRatio}
+                  onCropChange={setCrop}
+                  onZoomChange={setZoom}
+                  onRotationChange={setRotation}
+                  onCropComplete={onCropComplete}
+                />
 
                 <button
-                  type="button"
-                  className="clear-mood"
+                  className="moment-remove-image"
                   onClick={() => {
-                    setMood("");
-                    setMoodOpen(false);
+                    if (isEditMode) return;
+                    removeImage();
+                  }}
+                  type="button"
+                >
+                  ×
+                </button>
+
+                <label
+                  className="change-image-button"
+                  style={{
+                    pointerEvents: isEditMode ? "none" : "auto",
+                    opacity: isEditMode ? 0.5 : 1,
                   }}
                 >
-                  Clear mood
-                </button>
+                  Change image
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    hidden
+                  />
+                </label>
               </div>
+            ) : (
+              <label
+                className="moment-upload-area"
+                style={{
+                  pointerEvents: isEditMode ? "none" : "auto",
+                  opacity: isEditMode ? 0.5 : 1,
+                }}
+              >
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  hidden
+                />
+
+                <div className="upload-icon">＋</div>
+
+                <h3>Add a photo</h3>
+
+                <p>
+                  Add an image to make your moment visual
+                  <br />
+                  or simply continue with text.
+                </p>
+
+                <span className="upload-hint">
+                  JPG, PNG, WEBP • Up to 10 MB
+                </span>
+              </label>
             )}
-          </div>
 
-          <button
-            type="button"
-            onClick={() => {
-              setLocationOpen(true);
-              handleGetLocation();
-            }}
-          >
-            <span>📍</span>
-            {location ? "Location added" : "Location"}
-          </button>
-
-          <div className="tag-people-selector">
-            <button
-              type="button"
-              onClick={() => setTagPeopleOpen((value) => !value)}
+            <div
+              className="moment-edit-controls"
+              style={{
+                pointerEvents: isEditMode ? "none" : "auto",
+                opacity: isEditMode ? 0.5 : 1,
+              }}
             >
-              <span>👤</span>
-              {taggedPeople.length > 0
-                ? `${taggedPeople.length} tagged`
-                : "Tag people"}
-            </button>
 
-            {tagPeopleOpen && (
-              <div className="tag-people-menu">
-                <input
-                  type="text"
-                  placeholder="Search people..."
-                  value={userSearch}
-                  onChange={(e) => setUserSearch(e.target.value)}
-                  autoFocus
-                />
-
-                <div className="tag-people-list">
-                  {users
-                    .filter((user) => {
-                      const name = user.username || user.name || "";
-                      return name
-                        .toLowerCase()
-                        .includes(userSearch.toLowerCase());
-                    })
-                    .slice(0, 8)
-                    .map((user) => {
-                      const userId = user._id;
-
-                      const isSelected = taggedPeople.some(
-                        (person) => person._id === userId
-                      );
-
-                      return (
-                        <button
-                          type="button"
-                          key={userId}
-                          className={isSelected ? "selected" : ""}
-                          onClick={() => {
-                            setTaggedPeople((current) => {
-                              if (isSelected) {
-                                return current.filter(
-                                  (person) => person._id !== userId
-                                );
-                              }
-
-                              return [...current, user];
-                            });
-                          }}
-                        >
-                          <div className="tag-user-avatar">
-                            {(
-                              user.username ||
-                              user.name ||
-                              "U"
-                            ).charAt(0).toUpperCase()}
-                          </div>
-
-                          <div className="tag-user-info">
-                            <strong>
-                              {user.username || user.name || "User"}
-                            </strong>
-                            {user.email && <small>{user.email}</small>}
-                          </div>
-
-                          {isSelected && <span>✓</span>}
-                        </button>
-                      );
-                    })}
-
-                  {users.length === 0 && (
-                    <p className="tag-empty">No users found.</p>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-
-          <button
-            type="button"
-            onClick={() => setMusicOpen(true)}
-          >
-            <span>🎵</span>
-            {selectedMusic ? selectedMusic.title : "Sound"}
-          </button>
-
-        </div>
-
-        {/* LOCATION */}
-        {locationOpen && (
-          <div className="location-modal">
-            <div className="location-modal-card">
-
-              <div className="location-modal-header">
-                <div>
-                  <span className="location-eyebrow">KITE LOCATION</span>
-                  <h3>Add location</h3>
-                  <p>Attach your current location to this moment.</p>
+              <div className="edit-control">
+                <div className="edit-control-header">
+                  <span>Zoom</span>
+                  <span>{zoom.toFixed(1)}×</span>
                 </div>
 
-                <button
-                  type="button"
-                  className="location-close"
-                  onClick={() => setLocationOpen(false)}
-                >
-                  ×
-                </button>
-              </div>
+                <div className="edit-slider-row">
+                  <button
+                    type="button"
+                    className="edit-small-button"
+                    onClick={() =>
+                      setZoom((value) => Math.max(1, Number((value - 0.1).toFixed(1))))
+                    }
+                  >
+                    −
+                  </button>
 
-              <div className="location-search-box">
-                <input
-                  type="text"
-                  placeholder="Search a place, city or landmark..."
-                  value={locationSearch}
-                  onChange={(e) => setLocationSearch(e.target.value)}
-                />
-
-                <button
-                  type="button"
-                  onClick={handleSearchLocation}
-                  disabled={locationLoading || !locationSearch.trim()}
-                >
-                  {locationLoading ? "Searching..." : "Search"}
-                </button>
-              </div>
-
-              {locationResults.length > 0 && (
-                <div className="location-results">
-                  {locationResults.map((result) => (
-                    <button
-                      type="button"
-                      className="location-result-item"
-                      key={result.place_id}
-                      onClick={() => {
-                        setLocation({
-                          latitude: Number(result.lat),
-                          longitude: Number(result.lon),
-                          name: result.display_name,
-                        });
-
-                        setLocationSearch(result.display_name);
-                        setLocationResults([]);
-                      }}
-                    >
-                      <span className="location-result-pin">📍</span>
-
-                      <div>
-                        <strong>
-                          {result.name || result.display_name.split(",")[0]}
-                        </strong>
-
-                        <small>{result.display_name}</small>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              )}
-
-              {locationLoading && (
-                <div className="location-status">
-                  <div className="location-spinner">📍</div>
-                  <strong>Getting your location...</strong>
-                  <p>Please allow location access when your browser asks.</p>
-                </div>
-              )}
-
-              {!locationLoading && locationError && (
-                <div className="location-status location-error">
-                  <div className="location-spinner">⚠️</div>
-                  <strong>Couldn't get your location</strong>
-                  <p>{locationError}</p>
+                  <input
+                    type="range"
+                    min="1"
+                    max="3"
+                    step="0.1"
+                    value={zoom}
+                    onChange={(e) => setZoom(Number(e.target.value))}
+                  />
 
                   <button
                     type="button"
-                    onClick={handleGetLocation}
+                    className="edit-small-button"
+                    onClick={() =>
+                      setZoom((value) => Math.min(3, Number((value + 0.1).toFixed(1))))
+                    }
                   >
-                    Try again
+                    +
                   </button>
                 </div>
-              )}
+              </div>
 
-              {!locationLoading && !locationError && location && (
-                <div className="location-result">
-                  <div className="location-result-icon">📍</div>
-
-                  <div>
-                    <strong>Current location detected</strong>
-                    <p>
-                      Latitude: {location.latitude.toFixed(6)}
-                      <br />
-                      Longitude: {location.longitude.toFixed(6)}
-                    </p>
-                  </div>
+              <div className="edit-control">
+                <div className="edit-control-header">
+                  <span>Rotation</span>
+                  <span>{rotation}°</span>
                 </div>
-              )}
 
-              <div className="location-modal-actions">
+                <div className="edit-slider-row">
+                  <button
+                    type="button"
+                    className="edit-small-button"
+                    onClick={() =>
+                      setRotation((value) => Math.max(-180, value - 5))
+                    }
+                  >
+                    ↶
+                  </button>
+
+                  <input
+                    type="range"
+                    min="-180"
+                    max="180"
+                    step="1"
+                    value={rotation}
+                    onChange={(e) => setRotation(Number(e.target.value))}
+                  />
+
+                  <button
+                    type="button"
+                    className="edit-small-button"
+                    onClick={() =>
+                      setRotation((value) => Math.min(180, value + 5))
+                    }
+                  >
+                    ↷
+                  </button>
+                </div>
+              </div>
+
+              <div className="edit-quick-tools">
                 <button
                   type="button"
-                  className="location-cancel"
-                  onClick={() => setLocationOpen(false)}
+                  onClick={() =>
+                    setRotation((value) => (value - 90 < -180 ? 180 : value - 90))
+                  }
                 >
-                  Cancel
+                  ↶ 90°
                 </button>
 
                 <button
                   type="button"
-                  className="location-add"
-                  disabled={!location || locationLoading}
-                  onClick={() => setLocationOpen(false)}
+                  onClick={() =>
+                    setRotation((value) => (value + 90 > 180 ? -180 : value + 90))
+                  }
                 >
-                  Add Location
+                  ↷ 90°
                 </button>
               </div>
+
+              <button
+                type="button"
+                className="reset-edit-button"
+                onClick={() => {
+                  setCrop({ x: 0, y: 0 });
+                  setZoom(1);
+                  setRotation(0);
+                }}
+              >
+                Reset
+              </button>
 
             </div>
-          </div>
-        )}
 
-        {/* MUSIC */}
-        {musicOpen && (
-          <div className="music-modal">
-            <div className="music-modal-card">
+            <div
+              className="aspect-ratio-controls"
+              style={{
+                pointerEvents: isEditMode ? "none" : "auto",
+                opacity: isEditMode ? 0.5 : 1,
+              }}
+            >
+              <button
+                type="button"
+                className={aspectRatio === 4 / 5 ? "active" : ""}
+                onClick={() => setAspectRatio(4 / 5)}
+              >
+                4:5
+              </button>
 
-              <div className="music-modal-header">
-                <div>
-                  <span className="music-eyebrow">KITE MUSIC</span>
-                  <h3>Add music</h3>
-                  <p>Find a song that matches your moment.</p>
-                </div>
+              <button
+                type="button"
+                className={aspectRatio === 1 ? "active" : ""}
+                onClick={() => setAspectRatio(1)}
+              >
+                1:1
+              </button>
 
+              <button
+                type="button"
+                className={aspectRatio === 16 / 9 ? "active" : ""}
+                onClick={() => setAspectRatio(16 / 9)}
+              >
+                16:9
+              </button>
+            </div>
+
+            {/* IMAGE URL */}
+            <div className="moment-url-section">
+              <button
+                type="button"
+                className="url-toggle"
+                onClick={() => {
+                  if (isEditMode) return;
+
+                  setImage(null);
+                  setPreviewUrl("");
+                }}
+              >
+                Or use an image URL
+              </button>
+
+              <input
+                type="text"
+                placeholder="Paste image URL..."
+                value={imageUrl}
+                readOnly={isEditMode}
+                onChange={(e) => {
+                  if (isEditMode) return;
+
+                  setImageUrl(e.target.value);
+                  setImage(null);
+                }}
+              />
+            </div>
+
+          </section>
+
+          <section className="edit-section">
+            <div className="edit-section-header">
+              <span>EDIT</span>
+              <p>Customize your moment details</p>
+            </div>
+
+
+            {/* new TOOLS */}
+
+            <div className="moment-tools">
+              <div className="mood-selector">
                 <button
                   type="button"
-                  className="music-close"
-                  onClick={() => setMusicOpen(false)}
+                  onClick={() => setMoodOpen((value) => !value)}
                 >
-                  ×
+                  <span>{mood ? mood.split(" ")[0] : "✨"}</span>
+                  {mood ? mood.substring(mood.indexOf(" ") + 1) : "Mood"}
                 </button>
+
+                {moodOpen && (
+                  <div className="mood-menu">
+                    {[
+                      "😊 Happy",
+                      "😎 Chill",
+                      "❤️ Loved",
+                      "🔥 Excited",
+                      "😌 Peaceful",
+                      "🤔 Thoughtful",
+                      "🥳 Celebrating",
+                      "💪 Motivated",
+                    ].map((item) => (
+                      <button
+                        type="button"
+                        key={item}
+                        className={mood === item ? "selected" : ""}
+                        onClick={() => {
+                          setMood(item);
+                          setMoodOpen(false);
+                        }}
+                      >
+                        {item}
+                      </button>
+                    ))}
+
+                    <button
+                      type="button"
+                      className="clear-mood"
+                      onClick={() => {
+                        setMood("");
+                        setMoodOpen(false);
+                      }}
+                    >
+                      Clear mood
+                    </button>
+                  </div>
+                )}
               </div>
 
-              <div className="music-search-box">
-                <input
-                  type="text"
-                  placeholder="Search songs or artists..."
-                  value={musicSearch}
-                  onChange={(e) => setMusicSearch(e.target.value)}
-                />
+              <button
+                type="button"
+                onClick={() => {
+                  setLocationOpen(true);
+                  handleGetLocation();
+                }}
+              >
+                <span>📍</span>
+                {location ? "Location added" : "Location"}
+              </button>
 
+              <div className="tag-people-selector">
                 <button
                   type="button"
-                  onClick={handleSearchMusic}
-                  disabled={musicLoading || !musicSearch.trim()}
+                  onClick={() => setTagPeopleOpen((value) => !value)}
                 >
-                  {musicLoading ? "Searching..." : "Search"}
+                  <span>👤</span>
+                  {taggedPeople.length > 0
+                    ? `${taggedPeople.length} tagged`
+                    : "Tag people"}
                 </button>
-              </div>
 
-              {musicResults.length > 0 && !musicLoading && (
-                <button
-                  type="button"
-                  className="music-back-button"
-                  onClick={handleBackToMusicSuggestions}
-                >
-                  ← Back to Quick Picks
-                </button>
-              )}
+                {tagPeopleOpen && (
+                  <div className="tag-people-menu">
+                    <input
+                      type="text"
+                      placeholder="Search people..."
+                      value={userSearch}
+                      onChange={(e) => setUserSearch(e.target.value)}
+                      autoFocus
+                    />
 
-              {musicResults.length === 0 && !musicLoading && (
-                <div className="music-quick-picks">
-                  <div className="music-section-heading">
-                    <div>
-                      <span className="music-section-eyebrow">
-                        QUICK PICKS
-                      </span>
+                    <div className="tag-people-list">
+                      {users
+                        .filter((user) => {
+                          const name = user.username || user.name || "";
+                          return name
+                            .toLowerCase()
+                            .includes(userSearch.toLowerCase());
+                        })
+                        .slice(0, 8)
+                        .map((user) => {
+                          const userId = user._id;
 
-                      <h4>Find your vibe</h4>
+                          const isSelected = taggedPeople.some(
+                            (person) => person._id === userId
+                          );
 
-                      <p>Pick a mood or category to discover music.</p>
+                          return (
+                            <button
+                              type="button"
+                              key={userId}
+                              className={isSelected ? "selected" : ""}
+                              onClick={() => {
+                                setTaggedPeople((current) => {
+                                  if (isSelected) {
+                                    return current.filter(
+                                      (person) => person._id !== userId
+                                    );
+                                  }
+
+                                  return [...current, user];
+                                });
+                              }}
+                            >
+                              <div className="tag-user-avatar">
+                                {(
+                                  user.username ||
+                                  user.name ||
+                                  "U"
+                                ).charAt(0).toUpperCase()}
+                              </div>
+
+                              <div className="tag-user-info">
+                                <strong>
+                                  {user.username || user.name || "User"}
+                                </strong>
+                                {user.email && <small>{user.email}</small>}
+                              </div>
+
+                              {isSelected && <span>✓</span>}
+                            </button>
+                          );
+                        })}
+
+                      {users.length === 0 && (
+                        <p className="tag-empty">No users found.</p>
+                      )}
                     </div>
                   </div>
+                )}
+              </div>
 
-                  <div className="music-quick-picks-list">
-                    <button
-                      type="button"
-                      onClick={() => handleMusicQuickPick("trending songs")}
-                    >
-                      🔥 Trending
-                    </button>
+              <button
+                type="button"
+                onClick={() => setMusicOpen(true)}
+              >
+                <span>🎵</span>
+                {selectedMusic ? selectedMusic.title : "Sound"}
+              </button>
 
-                    <button
-                      type="button"
-                      onClick={() => handleMusicQuickPick("romantic songs")}
-                    >
-                      ❤️ Romantic
-                    </button>
+            </div>
 
-                    <button
-                      type="button"
-                      onClick={() => handleMusicQuickPick("chill songs")}
-                    >
-                      🌙 Chill
-                    </button>
+            {/* LOCATION */}
+            {locationOpen && (
+              <div className="location-modal">
+                <div className="location-modal-card">
 
-                    <button
-                      type="button"
-                      onClick={() => handleMusicQuickPick("workout songs")}
-                    >
-                      💪 Workout
-                    </button>
+                  <div className="location-modal-header">
+                    <div>
+                      <span className="location-eyebrow">KITE LOCATION</span>
+                      <h3>Add location</h3>
+                      <p>Attach your current location to this moment.</p>
+                    </div>
 
                     <button
                       type="button"
-                      onClick={() => handleMusicQuickPick("Bollywood songs")}
+                      className="location-close"
+                      onClick={() => setLocationOpen(false)}
                     >
-                      🎬 Bollywood
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => handleMusicQuickPick("English songs")}
-                    >
-                      🎧 English
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => handleMusicQuickPick("Punjabi songs")}
-                    >
-                      💜 Punjabi
+                      ×
                     </button>
                   </div>
-                </div>
-              )}
 
+                  <div className="location-search-box">
+                    <input
+                      type="text"
+                      placeholder="Search a place, city or landmark..."
+                      value={locationSearch}
+                      onChange={(e) => setLocationSearch(e.target.value)}
+                    />
 
+                    <button
+                      type="button"
+                      onClick={handleSearchLocation}
+                      disabled={locationLoading || !locationSearch.trim()}
+                    >
+                      {locationLoading ? "Searching..." : "Search"}
+                    </button>
+                  </div>
 
-              {musicLoading && (
-                <div className="music-empty-state">
-                  <div className="music-empty-icon">🎵</div>
+                  {locationResults.length > 0 && (
+                    <div className="location-results">
+                      {locationResults.map((result) => (
+                        <button
+                          type="button"
+                          className="location-result-item"
+                          key={result.place_id}
+                          onClick={() => {
+                            setLocation({
+                              latitude: Number(result.lat),
+                              longitude: Number(result.lon),
+                              name: result.display_name,
+                            });
 
-                  <strong>Searching music...</strong>
+                            setLocationSearch(result.display_name);
+                            setLocationResults([]);
+                          }}
+                        >
+                          <span className="location-result-pin">📍</span>
 
-                  <p>
-                    Finding songs that match your search.
-                  </p>
-                </div>
-              )}
+                          <div>
+                            <strong>
+                              {result.name || result.display_name.split(",")[0]}
+                            </strong>
 
-              {!musicLoading && musicError && (
-                <div className="music-empty-state">
-                  <div className="music-empty-icon">🎵</div>
+                            <small>{result.display_name}</small>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
 
-                  <strong>{musicError}</strong>
+                  {locationLoading && (
+                    <div className="location-status">
+                      <div className="location-spinner">📍</div>
+                      <strong>Getting your location...</strong>
+                      <p>Please allow location access when your browser asks.</p>
+                    </div>
+                  )}
 
-                  <p>
-                    Try searching for another song or artist.
-                  </p>
-                </div>
-              )}
+                  {!locationLoading && locationError && (
+                    <div className="location-status location-error">
+                      <div className="location-spinner">⚠️</div>
+                      <strong>Couldn't get your location</strong>
+                      <p>{locationError}</p>
 
-              {!musicLoading &&
-                !musicError &&
-                musicResults.length === 0 &&
-                musicSuggestions.length > 0 && (
-                  <div className="music-suggestions-section">
-                    <div className="music-section-heading">
+                      <button
+                        type="button"
+                        onClick={handleGetLocation}
+                      >
+                        Try again
+                      </button>
+                    </div>
+                  )}
+
+                  {!locationLoading && !locationError && location && (
+                    <div className="location-result">
+                      <div className="location-result-icon">📍</div>
+
                       <div>
-                        <span className="music-section-eyebrow">
-                          KITE MUSIC
-                        </span>
-
-                        <h4>Recommended for you</h4>
-
+                        <strong>Current location detected</strong>
                         <p>
-                          Discover something that fits your moment.
+                          Latitude: {location.latitude.toFixed(6)}
+                          <br />
+                          Longitude: {location.longitude.toFixed(6)}
                         </p>
                       </div>
                     </div>
+                  )}
 
-                    <div className="music-suggestions">
-                      {musicSuggestions.map((song) => (
+                  <div className="location-modal-actions">
+                    <button
+                      type="button"
+                      className="location-cancel"
+                      onClick={() => setLocationOpen(false)}
+                    >
+                      Cancel
+                    </button>
+
+                    <button
+                      type="button"
+                      className="location-add"
+                      disabled={!location || locationLoading}
+                      onClick={() => setLocationOpen(false)}
+                    >
+                      Add Location
+                    </button>
+                  </div>
+
+                </div>
+              </div>
+            )}
+
+            {/* MUSIC */}
+            {musicOpen && (
+              <div className="music-modal">
+                <div className="music-modal-card">
+
+                  <div className="music-modal-header">
+                    <div>
+                      <span className="music-eyebrow">KITE MUSIC</span>
+                      <h3>Add music</h3>
+                      <p>Find a song that matches your moment.</p>
+                    </div>
+
+                    <button
+                      type="button"
+                      className="music-close"
+                      onClick={() => setMusicOpen(false)}
+                    >
+                      ×
+                    </button>
+                  </div>
+
+                  <div className="music-search-box">
+                    <input
+                      type="text"
+                      placeholder="Search songs or artists..."
+                      value={musicSearch}
+                      onChange={(e) => setMusicSearch(e.target.value)}
+                    />
+
+                    <button
+                      type="button"
+                      onClick={handleSearchMusic}
+                      disabled={musicLoading || !musicSearch.trim()}
+                    >
+                      {musicLoading ? "Searching..." : "Search"}
+                    </button>
+                  </div>
+
+                  {musicResults.length > 0 && !musicLoading && (
+                    <button
+                      type="button"
+                      className="music-back-button"
+                      onClick={handleBackToMusicSuggestions}
+                    >
+                      ← Back to Quick Picks
+                    </button>
+                  )}
+
+                  {musicResults.length === 0 && !musicLoading && (
+                    <div className="music-quick-picks">
+                      <div className="music-section-heading">
+                        <div>
+                          <span className="music-section-eyebrow">
+                            QUICK PICKS
+                          </span>
+
+                          <h4>Find your vibe</h4>
+
+                          <p>Pick a mood or category to discover music.</p>
+                        </div>
+                      </div>
+
+                      <div className="music-quick-picks-list">
+                        <button
+                          type="button"
+                          onClick={() => handleMusicQuickPick("trending songs")}
+                        >
+                          🔥 Trending
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => handleMusicQuickPick("romantic songs")}
+                        >
+                          ❤️ Romantic
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => handleMusicQuickPick("chill songs")}
+                        >
+                          🌙 Chill
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => handleMusicQuickPick("workout songs")}
+                        >
+                          💪 Workout
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => handleMusicQuickPick("Bollywood songs")}
+                        >
+                          🎬 Bollywood
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => handleMusicQuickPick("English songs")}
+                        >
+                          🎧 English
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => handleMusicQuickPick("Punjabi songs")}
+                        >
+                          💜 Punjabi
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+
+
+                  {musicLoading && (
+                    <div className="music-empty-state">
+                      <div className="music-empty-icon">🎵</div>
+
+                      <strong>Searching music...</strong>
+
+                      <p>
+                        Finding songs that match your search.
+                      </p>
+                    </div>
+                  )}
+
+                  {!musicLoading && musicError && (
+                    <div className="music-empty-state">
+                      <div className="music-empty-icon">🎵</div>
+
+                      <strong>{musicError}</strong>
+
+                      <p>
+                        Try searching for another song or artist.
+                      </p>
+                    </div>
+                  )}
+
+                  {!musicLoading &&
+                    !musicError &&
+                    musicResults.length === 0 &&
+                    musicSuggestions.length > 0 && (
+                      <div className="music-suggestions-section">
+                        <div className="music-section-heading">
+                          <div>
+                            <span className="music-section-eyebrow">
+                              KITE MUSIC
+                            </span>
+
+                            <h4>Recommended for you</h4>
+
+                            <p>
+                              Discover something that fits your moment.
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="music-suggestions">
+                          {musicSuggestions.map((song) => (
+                            <div
+                              className="music-result-item"
+                              key={song.trackId}
+                            >
+                              <img
+                                src={song.artworkUrl100}
+                                alt=""
+                                className="music-result-artwork"
+                              />
+
+                              <div className="music-result-info">
+                                <strong>{song.trackName}</strong>
+
+                                <span>{song.artistName}</span>
+
+                                <small>{song.collectionName}</small>
+                              </div>
+
+                              <button
+                                type="button"
+                                className="music-preview-button"
+                                onClick={() =>
+                                  handleToggleMusicPreview({
+                                    id: song.trackId,
+                                    previewUrl: song.previewUrl,
+                                  })
+                                }
+                              >
+                                {playingMusicId === song.trackId
+                                  ? "⏸"
+                                  : "▶"}
+                              </button>
+
+                              <button
+                                type="button"
+                                className="music-select-button"
+                                onClick={() => {
+                                  setSelectedMusic({
+                                    id: song.trackId,
+                                    title: song.trackName,
+                                    artist: song.artistName,
+                                    album: song.collectionName,
+                                    artwork: song.artworkUrl100,
+                                    previewUrl: song.previewUrl,
+                                    trackUrl: song.trackViewUrl,
+                                  });
+
+                                  setPlayingMusicId(null);
+                                  setMusicOpen(false);
+                                }}
+                              >
+                                Add
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                  {!musicLoading && musicResults.length > 0 && (
+                    <div className="music-results">
+                      {musicResults.map((song) => (
                         <div
                           className="music-result-item"
                           key={song.trackId}
@@ -1407,9 +1597,7 @@ function CreatePost() {
                               })
                             }
                           >
-                            {playingMusicId === song.trackId
-                              ? "⏸"
-                              : "▶"}
+                            {playingMusicId === song.trackId ? "⏸" : "▶"}
                           </button>
 
                           <button
@@ -1435,321 +1623,269 @@ function CreatePost() {
                         </div>
                       ))}
                     </div>
+                  )}
+
+                  <div className="music-modal-actions">
+                    <button
+                      type="button"
+                      className="music-cancel"
+                      onClick={() => setMusicOpen(false)}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+
+                </div>
+              </div>
+            )}
+
+            {selectedMusic && (
+              <div className="selected-music-card">
+                <div className="selected-music-top">
+                  <img
+                    src={selectedMusic.artwork}
+                    alt=""
+                    className="selected-music-artwork"
+                  />
+
+                  <div className="selected-music-info">
+                    <span>ADDED MUSIC</span>
+                    <strong>{selectedMusic.title}</strong>
+                    <p>{selectedMusic.artist}</p>
+                  </div>
+
+                  <button
+                    type="button"
+                    className="selected-music-remove"
+                    onClick={() => {
+                      audioRef.current?.pause();
+                      audioRef.current = null;
+                      setSelectedMusic(null);
+                      setPlayingMusicId(null);
+                      setMusicCurrentTime(0);
+                      setMusicDuration(0);
+                    }}
+                    aria-label="Remove music"
+                  >
+                    ×
+                  </button>
+                </div>
+
+                <div className="selected-music-controls">
+                  <button
+                    type="button"
+                    className="music-skip-button"
+                    onClick={() => {
+                      if (!audioRef.current) return;
+
+                      audioRef.current.currentTime = Math.max(
+                        0,
+                        audioRef.current.currentTime - 10
+                      );
+                    }}
+                  >
+                    ↶10
+                  </button>
+
+                  <button
+                    type="button"
+                    className="music-main-play"
+                    onClick={() => handleToggleMusicPreview(selectedMusic)}
+                    aria-label={
+                      playingMusicId === selectedMusic.id
+                        ? "Pause music"
+                        : "Play music"
+                    }
+                  >
+                    {playingMusicId === selectedMusic.id ? "Ⅱ" : "▶"}
+                  </button>
+
+                  <button
+                    type="button"
+                    className="music-skip-button"
+                    onClick={() => {
+                      if (!audioRef.current) return;
+
+                      audioRef.current.currentTime = Math.min(
+                        audioRef.current.duration || musicDuration,
+                        audioRef.current.currentTime + 10
+                      );
+                    }}
+                  >
+                    10↷
+                  </button>
+                </div>
+
+                <input
+                  type="range"
+                  className="selected-music-progress"
+                  min="0"
+                  max={musicDuration || 0}
+                  step="0.1"
+                  value={Math.min(musicCurrentTime, musicDuration || 0)}
+                  onChange={(e) => {
+                    const time = Number(e.target.value);
+
+                    setMusicCurrentTime(time);
+
+                    if (audioRef.current) {
+                      audioRef.current.currentTime = time;
+                    }
+                  }}
+                />
+
+                <div className="selected-music-time">
+                  <span>
+                    {formatMusicTime(musicCurrentTime)}
+                  </span>
+
+                  <span>
+                    {formatMusicTime(musicDuration)}
+                  </span>
+                </div>
+
+                <button
+                  type="button"
+                  className="selected-music-change"
+                  onClick={() => {
+                    audioRef.current?.pause();
+                    audioRef.current = null;
+                    setPlayingMusicId(null);
+                    setMusicCurrentTime(0);
+                    setMusicDuration(0);
+                    setMusicOpen(true);
+                  }}
+                >
+                  Change music
+                </button>
+              </div>
+            )}
+
+
+            {/* AUDIENCE */}
+
+
+            <div className="moment-audience">
+              <div className="audience-info">
+                <span className="audience-icon">
+                  {audience === "everyone" ? "◉" : audience === "followers" ? "👥" : "🔒"}
+                </span>
+
+                <div>
+                  <strong>Who can see this?</strong>
+                  <p>
+                    {audience === "everyone"
+                      ? "Everyone on KITE"
+                      : audience === "followers"
+                        ? "Only your followers"
+                        : "Only you"}
+                  </p>
+                </div>
+              </div>
+
+              <div className="audience-selector">
+                <button
+                  type="button"
+                  className="audience-select-button"
+                  onClick={() => setAudienceOpen((value) => !value)}
+                >
+                  {audience === "everyone"
+                    ? "Everyone"
+                    : audience === "followers"
+                      ? "Followers"
+                      : "Only me"}
+
+                  <span>{audienceOpen ? "⌃" : "⌄"}</span>
+                </button>
+
+                {audienceOpen && (
+                  <div className="audience-menu">
+                    <button
+                      type="button"
+                      className={audience === "everyone" ? "selected" : ""}
+                      onClick={() => {
+                        setAudience("everyone");
+                        setAudienceOpen(false);
+                      }}
+                    >
+                      <span>◉</span>
+                      <div>
+                        <strong>Everyone</strong>
+                        <small>Everyone on KITE can see this</small>
+                      </div>
+                    </button>
+
+                    <button
+                      type="button"
+                      className={audience === "followers" ? "selected" : ""}
+                      onClick={() => {
+                        setAudience("followers");
+                        setAudienceOpen(false);
+                      }}
+                    >
+                      <span>👥</span>
+                      <div>
+                        <strong>Followers</strong>
+                        <small>Only your followers can see this</small>
+                      </div>
+                    </button>
+
+                    <button
+                      type="button"
+                      className={audience === "private" ? "selected" : ""}
+                      onClick={() => {
+                        setAudience("private");
+                        setAudienceOpen(false);
+                      }}
+                    >
+                      <span>🔒</span>
+                      <div>
+                        <strong>Only me</strong>
+                        <small>This post will be private</small>
+                      </div>
+                    </button>
                   </div>
                 )}
+              </div>
+            </div>
 
-              {!musicLoading && musicResults.length > 0 && (
-                <div className="music-results">
-                  {musicResults.map((song) => (
-                    <div
-                      className="music-result-item"
-                      key={song.trackId}
-                    >
-                      <img
-                        src={song.artworkUrl100}
-                        alt=""
-                        className="music-result-artwork"
-                      />
+          </section>
 
-                      <div className="music-result-info">
-                        <strong>{song.trackName}</strong>
 
-                        <span>{song.artistName}</span>
+          {/* ACTIONS */}
+          <div className="moment-actions">
+            <button
+              className="moment-cancel"
+              onClick={() => navigate("/create")}
+              type="button"
+            >
+              Cancel
+            </button>
 
-                        <small>{song.collectionName}</small>
-                      </div>
-
-                      <button
-                        type="button"
-                        className="music-preview-button"
-                        onClick={() =>
-                          handleToggleMusicPreview({
-                            id: song.trackId,
-                            previewUrl: song.previewUrl,
-                          })
-                        }
-                      >
-                        {playingMusicId === song.trackId ? "⏸" : "▶"}
-                      </button>
-
-                      <button
-                        type="button"
-                        className="music-select-button"
-                        onClick={() => {
-                          setSelectedMusic({
-                            id: song.trackId,
-                            title: song.trackName,
-                            artist: song.artistName,
-                            album: song.collectionName,
-                            artwork: song.artworkUrl100,
-                            previewUrl: song.previewUrl,
-                            trackUrl: song.trackViewUrl,
-                          });
-
-                          setPlayingMusicId(null);
-                          setMusicOpen(false);
-                        }}
-                      >
-                        Add
-                      </button>
-                    </div>
-                  ))}
-                </div>
+            <button
+              className="moment-publish"
+              onClick={handlePost}
+              type="button"
+              disabled={isPosting}
+            >
+              {isPosting ? (
+                isEditMode ? "Saving..." : "Publishing..."
+              ) : (
+                <>
+                  {isEditMode ? "Save Changes" : "Publish"}
+                  <img
+                    src={kiteIcon}
+                    alt="KITE"
+                    className="publish-kite-logo"
+                  />
+                </>
               )}
-
-              <div className="music-modal-actions">
-                <button
-                  type="button"
-                  className="music-cancel"
-                  onClick={() => setMusicOpen(false)}
-                >
-                  Cancel
-                </button>
-              </div>
-
-            </div>
-          </div>
-        )}
-
-        {selectedMusic && (
-          <div className="selected-music-card">
-            <div className="selected-music-top">
-              <img
-                src={selectedMusic.artwork}
-                alt=""
-                className="selected-music-artwork"
-              />
-
-              <div className="selected-music-info">
-                <span>ADDED MUSIC</span>
-                <strong>{selectedMusic.title}</strong>
-                <p>{selectedMusic.artist}</p>
-              </div>
-
-              <button
-                type="button"
-                className="selected-music-remove"
-                onClick={() => {
-                  audioRef.current?.pause();
-                  audioRef.current = null;
-                  setSelectedMusic(null);
-                  setPlayingMusicId(null);
-                  setMusicCurrentTime(0);
-                  setMusicDuration(0);
-                }}
-                aria-label="Remove music"
-              >
-                ×
-              </button>
-            </div>
-
-            <div className="selected-music-controls">
-              <button
-                type="button"
-                className="music-skip-button"
-                onClick={() => {
-                  if (!audioRef.current) return;
-
-                  audioRef.current.currentTime = Math.max(
-                    0,
-                    audioRef.current.currentTime - 10
-                  );
-                }}
-              >
-                ↶10
-              </button>
-
-              <button
-                type="button"
-                className="music-main-play"
-                onClick={() => handleToggleMusicPreview(selectedMusic)}
-                aria-label={
-                  playingMusicId === selectedMusic.id
-                    ? "Pause music"
-                    : "Play music"
-                }
-              >
-                {playingMusicId === selectedMusic.id ? "Ⅱ" : "▶"}
-              </button>
-
-              <button
-                type="button"
-                className="music-skip-button"
-                onClick={() => {
-                  if (!audioRef.current) return;
-
-                  audioRef.current.currentTime = Math.min(
-                    audioRef.current.duration || musicDuration,
-                    audioRef.current.currentTime + 10
-                  );
-                }}
-              >
-                10↷
-              </button>
-            </div>
-
-            <input
-              type="range"
-              className="selected-music-progress"
-              min="0"
-              max={musicDuration || 0}
-              step="0.1"
-              value={Math.min(musicCurrentTime, musicDuration || 0)}
-              onChange={(e) => {
-                const time = Number(e.target.value);
-
-                setMusicCurrentTime(time);
-
-                if (audioRef.current) {
-                  audioRef.current.currentTime = time;
-                }
-              }}
-            />
-
-            <div className="selected-music-time">
-              <span>
-                {formatMusicTime(musicCurrentTime)}
-              </span>
-
-              <span>
-                {formatMusicTime(musicDuration)}
-              </span>
-            </div>
-
-            <button
-              type="button"
-              className="selected-music-change"
-              onClick={() => {
-                audioRef.current?.pause();
-                audioRef.current = null;
-                setPlayingMusicId(null);
-                setMusicCurrentTime(0);
-                setMusicDuration(0);
-                setMusicOpen(true);
-              }}
-            >
-              Change music
             </button>
           </div>
-        )}
-        {/* AUDIENCE */}
-        <div className="moment-audience">
-          <div className="audience-info">
-            <span className="audience-icon">
-              {audience === "everyone" ? "◉" : audience === "followers" ? "👥" : "🔒"}
-            </span>
-
-            <div>
-              <strong>Who can see this?</strong>
-              <p>
-                {audience === "everyone"
-                  ? "Everyone on KITE"
-                  : audience === "followers"
-                    ? "Only your followers"
-                    : "Only you"}
-              </p>
-            </div>
-          </div>
-
-          <div className="audience-selector">
-            <button
-              type="button"
-              className="audience-select-button"
-              onClick={() => setAudienceOpen((value) => !value)}
-            >
-              {audience === "everyone"
-                ? "Everyone"
-                : audience === "followers"
-                  ? "Followers"
-                  : "Only me"}
-
-              <span>{audienceOpen ? "⌃" : "⌄"}</span>
-            </button>
-
-            {audienceOpen && (
-              <div className="audience-menu">
-                <button
-                  type="button"
-                  className={audience === "everyone" ? "selected" : ""}
-                  onClick={() => {
-                    setAudience("everyone");
-                    setAudienceOpen(false);
-                  }}
-                >
-                  <span>◉</span>
-                  <div>
-                    <strong>Everyone</strong>
-                    <small>Everyone on KITE can see this</small>
-                  </div>
-                </button>
-
-                <button
-                  type="button"
-                  className={audience === "followers" ? "selected" : ""}
-                  onClick={() => {
-                    setAudience("followers");
-                    setAudienceOpen(false);
-                  }}
-                >
-                  <span>👥</span>
-                  <div>
-                    <strong>Followers</strong>
-                    <small>Only your followers can see this</small>
-                  </div>
-                </button>
-
-                <button
-                  type="button"
-                  className={audience === "private" ? "selected" : ""}
-                  onClick={() => {
-                    setAudience("private");
-                    setAudienceOpen(false);
-                  }}
-                >
-                  <span>🔒</span>
-                  <div>
-                    <strong>Only me</strong>
-                    <small>This post will be private</small>
-                  </div>
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* ACTIONS */}
-        <div className="moment-actions">
-          <button
-            className="moment-cancel"
-            onClick={() => navigate("/create")}
-            type="button"
-          >
-            Cancel
-          </button>
-
-          <button
-            className="moment-publish"
-            onClick={handlePost}
-            type="button"
-            disabled={isPosting}
-          >
-            {isPosting ? (
-              "Publishing..."
-            ) : (
-              <>
-                Publish
-                <img
-                  src={kiteIcon}
-                  alt="KITE"
-                  className="publish-kite-logo"
-                />
-              </>
-            )}
-          </button>
         </div>
       </div>
     </div>
-  );
+      );
 }
 
-export default CreatePost;
+      export default CreatePost;
