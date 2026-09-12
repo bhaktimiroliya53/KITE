@@ -15,11 +15,13 @@ function PostView() {
 
   const fetchPost = async () => {
     try {
-      const res = await API.get("/posts");
+      const currentUser = JSON.parse(localStorage.getItem("user"));
 
-      const foundPost = res.data.find((p) => p._id === id);
+      const res = await API.get(
+        `/posts/${id}?userId=${encodeURIComponent(currentUser?._id || "")}`
+      );
 
-      setPost(foundPost);
+      setPost(res.data);
     } catch (error) {
       console.log(error);
     }
